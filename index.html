@@ -1,0 +1,1567 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>IRL</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;1,600;1,700;1,800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  /* Concept: a dark, fast, italic game HUD. Slanted shapes echo the wedge in the logo. Black and white carry the layout, violet marks progress, XP and "you". */
+  --bg:#09090B;
+  --surface:#131316;
+  --surface-2:#1B1B20;
+  --surface-3:#26262D;
+  --line:#25252B;
+  --fg:#F5F5F7;
+  --muted:#8D8D98;
+  --accent:#8B6CFF;
+  --accent-hi:color-mix(in srgb,var(--accent) 62%,white);
+  --accent-soft:color-mix(in srgb,var(--accent) 14%,transparent);
+  --pos:#6EE7A8;
+  --neg:#F28B82;
+  --font-display:'Barlow Condensed','Arial Narrow',system-ui,sans-serif;
+  --font-body:'Inter',system-ui,-apple-system,sans-serif;
+  --slant:polygon(9% 0,100% 0,91% 100%,0 100%);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;text-align:inherit}
+input{font:inherit;color:inherit}
+button:focus-visible,input:focus-visible,label:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+p{margin:0}
+.app{max-width:460px;margin:0 auto}
+.screen{display:flex;flex-direction:column;gap:var(--gap);padding:12px 0 calc(128px + env(safe-area-inset-bottom,0px))}
+.screen>*{animation:in .45s cubic-bezier(.2,.8,.2,1) both}
+.screen>*:nth-child(2){animation-delay:.04s}.screen>*:nth-child(3){animation-delay:.08s}.screen>*:nth-child(4){animation-delay:.12s}
+.screen>*:nth-child(5){animation-delay:.16s}.screen>*:nth-child(n+6){animation-delay:.2s}
+
+h1{font:italic 800 44px/.92 var(--font-display);text-transform:uppercase;margin:6px 0 0;text-wrap:balance;letter-spacing:.005em}
+h1 em{font-style:italic;color:var(--accent)}
+h2{font:italic 700 22px/1 var(--font-display);text-transform:uppercase;letter-spacing:.03em;margin:0}
+.eyebrow{font-size:11.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:500}
+.sub{color:var(--muted);margin-top:8px;max-width:34ch}
+.muted{color:var(--muted)}
+.num{font-variant-numeric:tabular-nums}
+.disp{font-family:var(--font-display);font-style:italic;font-weight:800;text-transform:uppercase}
+.head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.grow{flex:1;min-width:0}
+.ellip{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stack{display:flex;flex-direction:column;gap:12px}
+.between{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.sec{display:flex;flex-direction:column;gap:12px}
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.link{font-size:13px;color:var(--accent-hi);font-weight:500}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:var(--pad)}
+.card.tight{padding:4px 16px}
+.card.hero{position:relative;overflow:hidden;background:var(--surface);
+  background-image:repeating-linear-gradient(115deg,var(--stripe) 0 2px,transparent 2px 16px)}
+button.card{width:100%;display:block}
+
+.cta{width:100%;height:58px;clip-path:var(--slant);background:var(--fg);color:var(--bg);display:flex;align-items:center;justify-content:center;gap:10px;
+  font:italic 800 21px/1 var(--font-display);text-transform:uppercase;letter-spacing:.05em;transition:transform .12s,opacity .12s}
+.cta:active{transform:scale(.98)}
+.cta.violet{background:var(--accent);color:var(--on-accent)}
+.cta.ghost{background:var(--surface-2);color:var(--fg)}
+.cta[disabled]{opacity:.35}
+.cta.sm{height:38px;width:auto;padding:0 22px;font-size:16px;flex:none}
+.btn{height:52px;border-radius:var(--r-md);font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center;gap:10px;width:100%}
+.btn:active{transform:scale(.98)}
+.btn[disabled]{opacity:.35}
+.btn-ghost{background:var(--surface-2)}
+.btn-danger{color:var(--neg);border:1px solid var(--line)}
+.btn-sm{height:34px;padding:0 14px;border-radius:999px;font-size:13px;font-weight:500;background:var(--surface-2);display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:none;cursor:pointer}
+.btn-sm.solid{background:var(--fg);color:var(--bg)}
+.iconbtn{width:40px;height:40px;border-radius:50%;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;flex:none}
+
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{height:38px;padding:0 15px;border-radius:999px;border:1px solid var(--line);display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:500;flex:none}
+.chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.scroll-x{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -2px;padding:0 2px}
+.scroll-x::-webkit-scrollbar{display:none}
+.pill{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 12px;border-radius:999px;background:var(--accent-soft);font-size:13px;font-weight:500;flex:none;white-space:nowrap}
+.pill.plain{background:var(--surface-2)}
+.xp{display:inline-flex;align-items:center;height:22px;padding:0 11px;clip-path:var(--slant);background:var(--accent-soft);color:var(--accent-hi);font:italic 800 15px/1 var(--font-display);letter-spacing:.04em;flex:none;white-space:nowrap}
+.xp.dim{background:var(--surface-2);color:var(--muted)}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:4px;gap:4px}
+.seg button{height:38px;border-radius:var(--r-sm);color:var(--muted);font-weight:500;font-size:14px;text-align:center;position:relative}
+.seg button[aria-selected="true"]{background:var(--surface-3);color:var(--fg)}
+.seg i{position:absolute;top:6px;right:8px;min-width:16px;height:16px;border-radius:9px;background:var(--accent);color:var(--on-accent);font:normal 600 10px/16px var(--font-body);padding:0 4px}
+
+.avatar{border-radius:50%;background:var(--surface-3);border:1px solid var(--line);display:grid;place-items:center;font:italic 800 16px/1 var(--font-display);flex:none;overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.avatar.me{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.avatars{display:flex}
+.avatars .avatar,.avatars .crewmark{margin-left:-8px;box-shadow:0 0 0 2px var(--surface)}
+.avatars>:first-child{margin-left:0}
+.crewmark{display:grid;place-items:center;flex:none;overflow:hidden}
+.crewmark img{width:100%;height:100%;object-fit:cover;display:block}
+.mebtn{position:relative;flex:none}
+.mebadge{position:absolute;right:-5px;bottom:-5px;min-width:21px;height:21px;padding:0 5px;border-radius:99px;background:var(--bg);border:1.5px solid var(--accent);font:italic 800 13px/18px var(--font-display);text-align:center}
+
+.lvl{display:flex;flex-direction:column;align-items:center;justify-content:center;width:58px;height:62px;clip-path:polygon(14% 0,100% 0,86% 100%,0 100%);background:var(--accent);color:var(--on-accent);flex:none;line-height:1}
+.lvl small{font:italic 700 12px/1 var(--font-display);letter-spacing:.14em;opacity:.8}
+.lvl b{font:italic 800 34px/.9 var(--font-display)}
+.lvl.big{width:104px;height:112px}.lvl.big small{font-size:16px}.lvl.big b{font-size:66px}
+
+.xpbar{height:10px;border-radius:99px;background:var(--surface-3);overflow:hidden}
+.xpbar i,.bar i{display:block;height:100%;border-radius:99px;background:var(--accent);animation:fillbar .9s .15s cubic-bezier(.2,.8,.2,1) both}
+.bar{height:6px;border-radius:99px;background:var(--surface-3);overflow:hidden}
+@keyframes fillbar{from{width:0}}
+.hero-top{display:flex;align-items:center;gap:14px}
+.hero-name{font:italic 800 30px/1 var(--font-display);text-transform:uppercase}
+.xp-num{font:italic 800 28px/1 var(--font-display);letter-spacing:.02em}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px}
+.hs{background:var(--surface-2);border-radius:var(--r-sm);padding:10px 12px;min-width:0}
+.hs b{display:block;font:italic 800 24px/1 var(--font-display)}
+.hs span{font-size:11.5px;color:var(--muted)}
+
+.banner{display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;border-radius:var(--r-md);background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 35%,transparent)}
+.banner b{font:italic 800 20px/1 var(--font-display);text-transform:uppercase;letter-spacing:.03em}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--accent);flex:none;animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.35}}
+
+/* quests */
+.quest{display:flex;align-items:center;gap:13px;padding:13px 0;border-top:1px solid var(--line)}
+.quest:first-child{border-top:0}
+.quest.done .q-title{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--surface-3)}
+.q-title{font-weight:600;line-height:1.25}
+.q-desc{font-size:13px;color:var(--muted);margin-top:2px}
+.q-meta{display:flex;align-items:center;gap:8px;margin-top:7px}
+.q-meta .bar{flex:1;max-width:120px}
+.mring{position:relative;flex:none}
+.mring svg{display:block}
+.mring-c{position:absolute;inset:0;display:grid;place-items:center;font:italic 800 14px/1 var(--font-display)}
+.quest.sweep{background:var(--accent-soft);border-radius:var(--r-md);padding:13px 14px;border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);margin-top:6px}
+.mini-q{display:flex;align-items:center;gap:11px;padding:9px 0;border-top:1px solid var(--line);width:100%}
+.mini-q:first-child{border-top:0}
+
+/* feed */
+.post{display:flex;flex-direction:column;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:calc(var(--pad) - 2px)}
+.post-h{display:flex;align-items:center;gap:11px}
+.tag{font-size:12px;color:var(--accent-hi);background:var(--accent-soft);border-radius:99px;padding:3px 10px;font-weight:500;flex:none;max-width:42%}
+.pcard{display:flex;align-items:center;gap:12px;background:var(--surface-2);border-radius:var(--r-md);padding:12px 14px}
+.pcard .pi{width:40px;height:40px;clip-path:polygon(14% 0,100% 0,86% 100%,0 100%);background:var(--accent);color:var(--on-accent);display:grid;place-items:center;flex:none}
+.pcard.lv .pi{background:var(--fg);color:var(--bg)}
+.pcard b{font-weight:600}
+.quote{font-size:16px;line-height:1.4}
+.note{font-size:14px;color:var(--muted);font-style:italic}
+.reacts{display:flex;gap:8px}
+.react{height:34px;padding:0 13px;border-radius:99px;border:1px solid var(--line);display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--muted);transition:transform .15s}
+.react:active{transform:scale(.92)}
+.react[aria-pressed="true"]{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 50%,transparent);color:var(--fg)}
+.react[aria-pressed="true"] svg{color:var(--accent-hi)}
+.composer{display:flex;gap:8px;align-items:center}
+.field{width:100%;height:52px;border-radius:var(--r-md);background:var(--surface);border:1px solid var(--line);padding:0 16px;outline:none}
+.field:focus{border-color:var(--accent)}
+.label{font-size:13px;color:var(--muted);margin-bottom:8px;display:block}
+
+/* ranks */
+.podium{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:8px;align-items:end;padding-top:6px}
+.pod{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;width:100%}
+.pod-n{font-weight:600;font-size:14px;max-width:100%}
+.pod-x{font:italic 800 20px/1 var(--font-display);color:var(--muted)}
+.pod-b{width:100%;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);border-bottom:0;border-radius:14px 14px 0 0;font:italic 800 44px/1 var(--font-display);color:var(--muted)}
+.pod.p1 .pod-b{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.pod.p1 .pod-x{color:var(--fg)}
+.rank{width:28px;text-align:center;font:italic 800 22px/1 var(--font-display);color:var(--muted);flex:none}
+.row{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line);width:100%}
+.row:first-child{border-top:0}
+.row.me{background:var(--accent-soft);border-radius:var(--r-md);padding:12px;border-top-color:transparent;margin:2px 0}
+.pts{font:italic 800 22px/1 var(--font-display);font-variant-numeric:tabular-nums}
+.delta{font-size:11.5px;font-weight:600}
+.delta.up{color:var(--pos)}.delta.down{color:var(--neg)}
+.tiers{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.tier{display:flex;flex-direction:column;gap:6px;min-width:0}
+.tier span{font-size:11.5px;color:var(--muted)}
+.tier.on span{color:var(--fg)}
+
+/* tab bar */
+.tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,460px);z-index:30;display:grid;grid-template-columns:1fr 1fr 1.1fr 1fr 1fr;align-items:end;
+  padding:8px max(10px,env(safe-area-inset-left,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-right,0px));
+  background:var(--bar);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--line)}
+.tab{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;color:var(--muted);font-size:10.5px;font-weight:500}
+.tab[aria-current="page"]{color:var(--fg)}
+.tab[aria-current="page"] svg{color:var(--accent-hi)}
+.tab i{position:absolute;top:1px;left:calc(50% + 6px);min-width:16px;height:16px;border-radius:9px;background:var(--accent);color:var(--on-accent);font:normal 600 10px/16px var(--font-body);padding:0 4px;text-align:center}
+.play{display:flex;justify-content:center;filter:drop-shadow(0 6px 14px color-mix(in srgb,var(--accent) 45%,transparent))}
+.play-btn{width:72px;height:54px;margin-top:-20px;clip-path:polygon(15% 0,100% 0,85% 100%,0 100%);background:var(--accent);color:var(--on-accent);display:grid;place-items:center}
+.play-btn.live{animation:pulse 1.4s infinite}
+.livebar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(74px + env(safe-area-inset-bottom,0px));width:min(calc(100% - 32px),428px);z-index:29;height:48px;border-radius:var(--r-md);background:var(--surface-3);border:1px solid color-mix(in srgb,var(--accent) 40%,transparent);display:flex;align-items:center;gap:12px;padding:0 14px;animation:rise .3s}
+.livebar b{font:italic 800 20px/1 var(--font-display);font-variant-numeric:tabular-nums}
+
+/* sheets and overlays */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.66);z-index:40;animation:fade .2s}
+.sheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,460px);max-height:90%;overflow-y:auto;z-index:41;background:var(--surface);border:1px solid var(--line);border-bottom:0;border-radius:26px 26px 0 0;
+  padding:12px max(18px,env(safe-area-inset-left,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-right,0px));animation:rise .26s cubic-bezier(.2,.8,.2,1)}
+.sheet .grab{width:38px;height:4px;border-radius:9px;background:var(--line);margin:0 auto 16px}
+.toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;background:var(--fg);color:var(--bg);padding:11px 18px;border-radius:999px;font-weight:600;font-size:14px;max-width:calc(100% - 40px);text-align:center;animation:rise .22s}
+.reward{position:fixed;inset:0;z-index:55;background:var(--overlay);display:flex;align-items:center;justify-content:center;padding:24px max(24px,env(safe-area-inset-left,0px));overflow:hidden;animation:fade .25s}
+.rw-glow{position:absolute;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--accent) 35%,transparent),transparent 62%);animation:glow 2.4s ease-in-out infinite}
+.rw-in{position:relative;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;width:min(100%,380px);animation:pop .5s cubic-bezier(.2,1.3,.4,1)}
+.rw-title{font:italic 800 34px/1 var(--font-display);text-transform:uppercase;text-wrap:balance}
+.rw-xp{font:italic 800 96px/.9 var(--font-display);font-variant-numeric:tabular-nums}
+.rw-xp small{font-size:34px;margin-left:8px;color:var(--accent-hi)}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateX(-50%) translateY(14px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
+@keyframes glow{50%{transform:scale(1.15);opacity:.7}}
+
+/* misc */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:14px;min-width:0}
+.stat .v{font:italic 800 30px/1 var(--font-display);font-variant-numeric:tabular-nums}
+.stat .k{font-size:12px;color:var(--muted);margin-top:4px}
+.prs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pr{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:14px;min-width:0;position:relative}
+.pr .v{font:italic 800 32px/1 var(--font-display)}
+.pr .v small{font-size:16px;color:var(--muted);margin-left:3px}
+.pr .k{font-size:12px;color:var(--muted);margin-top:4px}
+.pr .new{position:absolute;top:12px;right:12px;font:italic 800 12px/1 var(--font-display);letter-spacing:.1em;background:var(--accent);color:var(--on-accent);padding:3px 8px;clip-path:var(--slant)}
+.ach{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ach>div{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:14px 8px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;min-width:0}
+.ach .ic{width:44px;height:44px;clip-path:polygon(14% 0,100% 0,86% 100%,0 100%);display:grid;place-items:center;background:var(--accent);color:var(--on-accent)}
+.ach .off{opacity:.42}.ach .off .ic{background:var(--surface-3);color:var(--muted)}
+.ach b{font-size:12.5px;font-weight:600;line-height:1.2}
+.ach small{font-size:11px;color:var(--muted);line-height:1.25}
+.bars{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;align-items:end;height:108px}
+.bars div{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;height:100%}
+.bars i{display:block;width:100%;max-width:30px;border-radius:8px;background:var(--surface-3);min-height:4px}
+.bars .today i{background:var(--accent)}
+.bars span{font-size:11px;color:var(--muted)}
+.bars .today span{color:var(--fg)}
+.ring-wrap{position:relative;width:min(100%,280px);aspect-ratio:1;margin:0 auto}
+.ring-wrap svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.timer{font:italic 800 76px/.9 var(--font-display);font-variant-numeric:tabular-nums}
+.code{font:italic 800 46px/1 var(--font-display);letter-spacing:.12em;text-align:center}
+.switch{width:50px;height:30px;border-radius:99px;background:var(--surface-3);position:relative;flex:none;transition:background .2s}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:var(--muted);transition:transform .2s,background .2s}
+.switch[aria-checked="true"]{background:var(--accent)}
+.switch[aria-checked="true"]::after{transform:translateX(20px);background:#fff}
+.emblems{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.emblems button{height:54px;border-radius:var(--r-sm);background:var(--surface-2);border:1px solid var(--line);display:grid;place-items:center}
+.emblems button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.empty{text-align:center;color:var(--muted);padding:24px 8px;display:flex;flex-direction:column;gap:12px;align-items:center}
+
+/* onboarding */
+.onb{position:fixed;inset:0;z-index:70;background:var(--bg);display:flex;justify-content:center;overflow-y:auto}
+.onb-in{width:min(100%,460px);min-height:100%;display:flex;flex-direction:column;gap:22px;padding:calc(18px + env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-left,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-right,0px))}
+.onb-top{display:flex;align-items:center;justify-content:space-between;min-height:34px}
+.dots{display:flex;gap:6px}
+.dots i{width:22px;height:4px;border-radius:9px;background:var(--surface-3)}
+.dots i.on{background:var(--accent)}
+.onb-body{flex:1;display:flex;flex-direction:column;justify-content:center;gap:24px;animation:in .5s both}
+.onb h1{font-size:62px}
+.onb-logo{width:150px;display:block;mix-blend-mode:lighten}
+.vis{display:flex;flex-direction:column;gap:10px;align-items:center}
+.logo{height:20px;width:auto;display:block;mix-blend-mode:lighten}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* customization */
+:root{--bar:rgba(9,9,11,.92);--overlay:rgba(9,9,11,.97);--stripe:rgba(255,255,255,.028);--on-accent:#fff;--gap:26px;--pad:20px;--r-lg:22px;--r-md:16px;--r-sm:12px}
+:root[data-density="standard"]{--gap:20px;--pad:18px}
+:root[data-density="compact"]{--gap:14px;--pad:14px}
+:root[data-corners="sharp"]{--r-lg:6px;--r-md:4px;--r-sm:3px}
+:root[data-corners="round"]{--r-lg:32px;--r-md:24px;--r-sm:18px}
+:root[data-look="light"]{--bg:#F5F5F7;--surface:#FFFFFF;--surface-2:#F0F0F4;--surface-3:#E3E3EA;--line:#E6E6EC;--fg:#0F0F12;--muted:#6E6E79;--bar:rgba(245,245,247,.92);--overlay:rgba(245,245,247,.98);--stripe:rgba(0,0,0,.03);--accent-hi:color-mix(in srgb,var(--accent) 78%,black);color-scheme:light}
+:root[data-look="light"] .logo,:root[data-look="light"] .onb-logo{filter:invert(1);mix-blend-mode:darken}
+:root[data-look="light"] .scrim{background:rgba(0,0,0,.35)}
+:root[data-motion="off"] *{animation:none!important;transition:none!important}
+:root[data-labels="off"] .tab span{display:none}
+:root[data-labels="off"] .tab{padding:12px 0}
+:root[data-type="clean"] :is(h1,h2,.disp,.hero-name,.xp-num,.pts,.stat .v,.timer,.code,.rw-title,.rw-xp,.lvl small,.lvl b,.pr .v,.xp,.rank,.pod-x,.pod-b,.mring-c,.livebar b,.hs b,.mebadge,.avatar,.cta,.banner b,.pr .new){font-family:var(--font-body);font-style:normal;text-transform:none;letter-spacing:-.02em}
+:root[data-type="clean"] h1{font-size:34px;line-height:1.08;letter-spacing:-.03em;font-weight:700}
+:root[data-type="clean"] h2{font-size:18px;font-weight:700;letter-spacing:-.01em}
+:root[data-type="clean"] .hero-name{font-size:24px;line-height:1.1;font-weight:700}
+:root[data-type="clean"] .xp-num{font-size:22px;font-weight:700}
+:root[data-type="clean"] .cta{font-size:16px;font-weight:600;letter-spacing:0}
+:root[data-type="clean"] .timer{font-size:62px;font-weight:600}
+:root[data-type="clean"] .rw-xp{font-size:76px;font-weight:700}
+:root[data-type="clean"] .rw-title{font-size:30px;font-weight:700}
+:root[data-type="clean"] .pts{font-size:18px;font-weight:700}
+:root[data-type="clean"] :is(.stat .v,.pr .v){font-size:26px;font-weight:700}
+:root[data-type="clean"] .code{font-size:36px;font-weight:700}
+:root[data-type="clean"] .lvl b{font-size:28px;font-weight:700}
+:root[data-type="clean"] .xp{font-size:13px;font-weight:600;letter-spacing:0}
+:root[data-type="clean"] .hs b{font-size:20px;font-weight:700}
+:root[data-type="clean"] .rank{font-size:17px;font-weight:700}
+:root[data-type="clean"] .pod-b{font-size:34px;font-weight:700}
+:root[data-type="clean"] .pod-x{font-size:16px;font-weight:600}
+.h1-sm{font-size:34px}
+.pg{display:flex;flex-direction:column;gap:var(--gap)}
+.tog{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:99px;padding:3px;gap:2px;flex:none}
+.tog button{height:30px;padding:0 13px;border-radius:99px;font-size:13px;font-weight:500;color:var(--muted)}
+.tog button[aria-selected="true"]{background:var(--surface-3);color:var(--fg)}
+.swatches{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.sw{width:40px;height:40px;border-radius:50%;border:2px solid transparent;box-shadow:0 0 0 1px var(--line);display:grid;place-items:center;flex:none;position:relative}
+.sw[aria-pressed="true"],.sw.custom.on{border-color:var(--fg)}
+.sw.custom{overflow:hidden;background:conic-gradient(#ff4d4d,#ffd24d,#4dff88,#4dd2ff,#6a4dff,#ff4dd2,#ff4d4d);cursor:pointer}
+.sw.custom input{position:absolute;inset:-10px;width:70px;height:70px;opacity:0;cursor:pointer}
+.looks{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin:0 -4px;padding:4px}
+.looks::-webkit-scrollbar{display:none}
+.look{flex:none;width:112px;border-radius:var(--r-md);border:2px solid var(--line);padding:8px;display:flex;flex-direction:column;gap:8px;font-size:13px;font-weight:500;background:var(--surface)}
+.look[aria-pressed="true"]{border-color:var(--accent)}
+.look-pv{height:58px;border-radius:10px;position:relative;overflow:hidden;box-shadow:0 0 0 1px var(--line) inset}
+.look-pv i{position:absolute;left:8px;right:8px;top:10px;height:16px}
+.look-pv b{position:absolute;left:8px;bottom:9px;width:38px;height:10px}
+.lay{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.lay:first-child{border-top:0}
+.mv{width:34px;height:34px;border-radius:50%;background:var(--surface-2);display:grid;place-items:center;flex:none}
+.mv[disabled]{opacity:.28}
+.mv.up svg{transform:rotate(-90deg)}
+.mv.dn svg{transform:rotate(90deg)}
+.swdot{width:22px;height:22px;border-radius:50%;background:var(--accent);flex:none}
+
+/* Phone and tablet adjustments leave the desktop styles above intact. */
+.mobile-nav{display:none}
+@media (max-width:767px){
+  body{font-size:16px;overflow-wrap:anywhere}
+  .app{min-width:0}
+  .screen,.pg,.sec,.stack,.onb-in,.onb-body,.rw-in{min-width:0;max-width:100%}
+  .screen>*,.pg>*,.sec>*,.stack>*{min-width:0}
+  img,video,canvas{max-width:100%;height:auto}
+  iframe,embed,object{display:block;width:100%;max-width:100%;height:auto;aspect-ratio:16/9}
+  input,textarea,select{min-width:0;max-width:100%;font-size:16px}
+  button,a[href],input:not([type="hidden"]),select,textarea,label.btn-sm,label.sw{
+    min-width:44px;min-height:44px;
+  }
+  .btn,.btn-sm,.link,.chip,.react,.seg button,.tog button,.label,.q-desc,.note,
+  .pill,.tag,.pod-n,.look,.eyebrow,.bars span,.hs span,.stat .k,.pr .k,.ach b,.ach small,.tier span{font-size:16px}
+  .muted,.mini-q p{font-size:16px!important}
+  .link{display:inline-flex;align-items:center;justify-content:center;text-align:center}
+  .btn{height:auto;padding:12px;min-height:52px;text-align:center}
+  .cta{height:auto;min-height:58px;padding:14px 24px;text-align:center}
+  .cta.sm{min-height:44px;padding:8px 18px}
+  .btn-sm,.chip,.react,.iconbtn,.mv,.sw,.tog button{height:auto;min-height:44px}
+  .iconbtn,.mv,.sw{width:44px;height:44px}
+  .chip{max-width:100%;padding:10px 15px}
+  .pill,.tag{height:auto;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+  .pill{padding-block:6px}
+  .switch{height:44px}
+  .switch::after{top:calc(50% - 12px)}
+  .between,.sec-h,.reacts{flex-wrap:wrap}
+  .sec-h>*{min-width:0;max-width:100%}
+  .head,.row,.hero-top,.post-h,.pcard,.quest,.mini-q{min-width:0}
+  .hero-name.ellip,.mini-q p.ellip{white-space:normal;overflow:visible;text-overflow:clip}
+  .post-h{flex-wrap:wrap}
+  .post-h>.grow{flex-basis:calc(100% - 51px)}
+  .post-h>.tag{margin-left:51px;max-width:calc(100% - 51px)}
+  .head>svg,.row>svg,.post-h>svg,.pcard>svg,.banner>svg{flex-shrink:0}
+  .composer .field{flex:1;min-width:0}
+  .seg{grid-auto-columns:minmax(0,1fr)}
+  .seg button{min-width:0;height:auto;min-height:44px;padding:8px 4px}
+  .seg i{position:static;display:inline-block;margin-left:4px;vertical-align:middle}
+  .scroll-x,.looks{min-width:0;max-width:100%;margin-inline:0}
+  .scroll-x{padding:2px}
+  .lay>.muted{min-width:max-content}
+  .sw.custom input{inset:0;width:100%;height:100%}
+  .onb{align-items:flex-start}
+  .onb-in{height:max-content}
+  .onb-in>*{flex-shrink:0}
+  .onb-body{flex:1 0 auto}
+  .onb h1{font-size:clamp(42px,12vw,62px)}
+  .sheet{max-height:90dvh;overscroll-behavior:contain}
+  .reward{overflow-y:auto;align-items:safe center}
+  .rw-in{flex-shrink:0}
+  .desktop-nav{display:none}
+  .mobile-nav{
+    position:fixed;bottom:0;left:50%;transform:translateX(-50%);z-index:30;
+    display:flex;gap:12px;width:min(100%,460px);
+    padding:8px max(16px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+    background:var(--bar);border-top:1px solid var(--line);backdrop-filter:blur(16px);
+  }
+  .mobile-nav-toggle,.mobile-nav-play{
+    flex:1;display:flex;align-items:center;justify-content:center;gap:10px;
+    min-height:52px;padding:10px 16px;border-radius:var(--r-md);font-size:16px;font-weight:600;
+  }
+  .mobile-nav-toggle{background:var(--surface-2);border:1px solid var(--line)}
+  .mobile-nav-toggle[aria-expanded="true"]{border-color:var(--accent)}
+  .mobile-nav-play{background:var(--accent);color:var(--on-accent)}
+  .mobile-nav-play.live{animation:pulse 1.4s infinite}
+  .mobile-nav-links{
+    position:absolute;bottom:calc(100% + 8px);left:16px;right:16px;padding:8px;
+    max-height:calc(100dvh - 110px - env(safe-area-inset-bottom,0px));overflow-y:auto;
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+    box-shadow:0 12px 36px rgba(0,0,0,.3);
+  }
+  .mobile-nav-links button{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;padding:12px;border-radius:var(--r-sm);font-size:16px}
+  .mobile-nav-links [aria-current="page"]{background:var(--accent-soft);color:var(--accent-hi)}
+  .mobile-nav-links .pill{margin-left:auto}
+}
+@media (max-width:380px){
+  .hero-top{flex-wrap:wrap}
+  .hero-top>.grow{flex-basis:calc(100% - 72px)}
+  .hero-top>.pill,.hero-top>.xp{margin-left:auto}
+  .stats,.hero-stats{gap:6px}
+  .stat,.hs{padding:12px 8px}
+  .ach{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tiers{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:12px}
+  .quest{flex-wrap:wrap}
+  .quest>.grow{flex-basis:calc(100% - 62px)}
+  .quest>button{margin-left:auto}
+  .lay{gap:6px;flex-wrap:wrap}
+  .lay>.grow{flex-basis:100%}
+}
+</style>
+
+<div id="root"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/htm@3.1.1/dist/htm.umd.js"></script>
+<script>
+const {useState,useEffect,useRef,useCallback} = React;
+const html = htm.bind(React.createElement);
+const LOGO = 'data:image/png;base64,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';
+
+/*==LOGIC_START==*/
+/* ============================================================
+   1. Config. Edit these to retune the game.
+   ============================================================ */
+const POINTS = {perMinute:1, completion:10, perFriend:5, streakMin:3, streakPts:15, friendShare:.8,
+  tiers:[{min:60,pts:40,label:'Deep focus bonus'},{min:25,pts:15,label:'Long session bonus'}]};
+const DURATIONS = [15,25,45,60];
+const TITLES = ['Rookie','Regular','Contender','Challenger','Veteran','Legend'];
+const TIERS = [{k:'Bronze',xp:400},{k:'Silver',xp:1000},{k:'Gold',xp:2000},{k:'Legend',xp:3500}];
+const TONES = {violet:{bg:'var(--accent)',fg:'var(--on-accent)'},white:{bg:'#F5F5F7',fg:'#0A0A0B'},ink:{bg:'#2A2A31',fg:'#F5F5F7'},lilac:{bg:'#33295F',fg:'#C9BCFF'}};
+const EMBLEMS = ['bolt','flame','star','trophy','target','clock','heart','hangout'];
+const REACTS = [{k:'fire',icon:'flame'},{k:'bolt',icon:'bolt'},{k:'heart',icon:'heart'}];
+const SCOPE = {daily:'Daily',weekly:'Weekly',solo:'Individual',crew:'Crew'};
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+/* ============================================================
+   2. Helpers
+   ============================================================ */
+const KEY = 'irl-prototype-v2';
+const DAY = 86400000, MIN = 60000;
+const pad = n => String(n).padStart(2,'0');
+const dayKey = (d = new Date()) => d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+const dayDiff = (a,b) => Math.round((new Date(b + 'T12:00:00') - new Date(a + 'T12:00:00')) / DAY);
+const weekId = (d = new Date()) => { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return dayKey(x); };
+const seasonId = (d = new Date()) => d.getFullYear() + '-' + pad(d.getMonth()+1);
+const initials = n => n.trim().split(/\s+/).map(w => w[0]).slice(0,2).join('').toUpperCase() || '?';
+const first = n => n.trim().split(/\s+/)[0] || n;
+const fmt = sec => pad(Math.floor(sec/60)) + ':' + pad(Math.floor(sec%60));
+const uid = () => 'i' + Math.random().toString(36).slice(2,9);
+const genCode = () => 'IRL-' + Array.from({length:4}, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)]).join('');
+const rnd = (a,b) => a + Math.random() * (b - a);
+const num = n => Math.round(n).toLocaleString();
+function ago(ts){
+  const m = Math.floor((Date.now() - ts) / MIN);
+  if(m < 1) return 'Just now';
+  if(m < 60) return m + ' min ago';
+  const h = Math.floor(m / 60);
+  if(h < 24) return h + ' h ago';
+  const d = Math.floor(h / 24);
+  return d === 1 ? 'Yesterday' : d + ' d ago';
+}
+function left(ms){
+  const d = Math.floor(ms / DAY), h = Math.floor(ms % DAY / 3600000), m = Math.floor(ms % 3600000 / MIN);
+  return d >= 1 ? d + 'd ' + h + 'h' : h >= 1 ? h + 'h ' + m + 'm' : Math.max(1, m) + 'm';
+}
+const untilWeek = () => { const d = new Date(); return left(new Date(d.getFullYear(), d.getMonth(), d.getDate() + 7 - ((d.getDay() + 6) % 7)) - d); };
+const untilDay = () => { const d = new Date(); return left(new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1) - d); };
+const seasonName = () => MONTHS[new Date().getMonth()] + ' Season';
+const seasonDaysLeft = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate() - d.getDate(); };
+
+/* levels: level n starts at 60 * (n-1)^2 XP */
+const lvlOf = xp => Math.floor(Math.sqrt(Math.max(0, xp) / 60)) + 1;
+const lvlStart = l => 60 * (l - 1) * (l - 1);
+const titleOf = l => TITLES[Math.min(5, Math.floor((l - 1) / 2))];
+function lvlProg(xp){ const l = lvlOf(xp), a = lvlStart(l), b = lvlStart(l + 1); return {l, pct:(xp - a) / (b - a), toNext:b - xp}; }
+function tierInfo(xp){
+  let cur = -1; TIERS.forEach((t,i) => { if(xp >= t.xp) cur = i; });
+  const next = TIERS[cur + 1] || null, prev = cur >= 0 ? TIERS[cur].xp : 0;
+  return {cur, name:cur >= 0 ? TIERS[cur].k : 'Unranked', next, pct:next ? (xp - prev) / (next.xp - prev) : 1, toNext:next ? next.xp - xp : 0};
+}
+function score(mins, friendsIn, streak){
+  const lines = [{label:mins + ' min phone-free', pts:mins * POINTS.perMinute},{label:'Completion bonus', pts:POINTS.completion}];
+  const tier = POINTS.tiers.find(t => mins >= t.min);
+  if(tier) lines.push({label:tier.label, pts:tier.pts});
+  if(friendsIn > 0) lines.push({label:friendsIn + (friendsIn === 1 ? ' friend' : ' friends') + ' stayed in', pts:friendsIn * POINTS.perFriend});
+  if(streak >= POINTS.streakMin) lines.push({label:streak + ' day streak', pts:POINTS.streakPts});
+  return {lines, total:lines.reduce((a,l) => a + l.pts, 0)};
+}
+
+/* ============================================================
+   3. Quests
+   ============================================================ */
+const CHECK_POOL = ['d_walk','d_meal','d_call','d_out','d_plan','d_off'];
+const wkMinsOf = (s, g) => s.wk.mins + g.members.reduce((a,id) => { const f = s.friends.find(x => x.id === id); return a + (f ? f.wmin : 0); }, 0);
+const QD = {
+  d_session:{kind:'auto',title:'Finish a phone-free session',desc:'Any length counts.',xp:40,target:1,prog:s => s.today.sessions},
+  d_min30:{kind:'auto',title:'30 phone-free minutes',desc:'Sessions today add up.',xp:50,target:30,unit:'min',prog:s => s.today.mins},
+  d_friends:{kind:'auto',title:'Hang out with 2 friends',desc:'Finish one session with 2 or more friends.',xp:60,target:2,prog:s => s.today.maxFriends},
+  d_walk:{kind:'check',title:'Take a 15 minute walk',desc:'Phone stays in your pocket.',xp:30,target:1},
+  d_meal:{kind:'check',title:'Eat one meal phone-free',desc:'Leave it in another room.',xp:35,target:1},
+  d_call:{kind:'check',title:'Call someone',desc:'Voice, not text.',xp:30,target:1},
+  d_out:{kind:'check',title:'Get outside for 20 minutes',desc:'Sun, rain or snow.',xp:30,target:1},
+  d_plan:{kind:'check',title:'Make a plan with a friend',desc:'Lock in a day and a time.',xp:30,target:1},
+  d_off:{kind:'check',title:'Do something offline',desc:'Cook, draw, read, build.',xp:30,target:1},
+  w_goal:{kind:'auto',title:s => Math.round(s.settings.goalMin / 6) / 10 + ' phone-free hours',desc:'Hit your weekly goal.',xp:150,target:s => s.settings.goalMin,unit:'min',prog:s => s.wk.mins},
+  w_sessions:{kind:'auto',title:'Finish 5 sessions',desc:'Solo or with friends.',xp:100,target:5,prog:s => s.wk.sessions},
+  w_meet:{kind:'check',title:'Meet up in person 3 times',desc:'Coffee, a walk, a game night.',xp:150,target:3},
+  s_solo:{kind:'auto',title:'Solo reset',desc:'Finish a 25+ minute session on your own.',xp:60,target:1,prog:s => s.wk.solo},
+  s_long:{kind:'auto',title:'Go the distance',desc:'Stay off your phone for 60 minutes in one session.',xp:120,target:60,unit:'min',prog:s => s.wk.longest},
+  s_new:{kind:'check',title:'Try something new',desc:'A new place or a new activity.',xp:90,target:1},
+  g_min:{kind:'auto',title:'Crew phone-free minutes',desc:'Everyone’s minutes add up this week.',xp:120,target:(s,x) => 220 * (x.g.members.length + 1),unit:'min',prog:(s,x) => wkMinsOf(s, x.g)},
+  g_hang:{kind:'auto',title:'Two crew hangouts',desc:'Finish 2 sessions with crew members.',xp:100,target:2,prog:(s,x) => s.wk.hangouts[x.g.id] || 0},
+  g_meet:{kind:'check',title:'Crew night out',desc:'Get the whole crew together in person.',xp:140,target:1}
+};
+function mkQ(s, id, scope, period, x = {}){
+  const d = QD[id];
+  const key = id + (x.g ? ':' + x.g.id : '') + '@' + period;
+  const target = typeof d.target === 'function' ? d.target(s, x) : d.target;
+  const raw = d.kind === 'auto' ? d.prog(s, x) : (s.checks[key] || 0);
+  const claimed = !!s.claimed[key];
+  return {id, key, scope, kind:d.kind, title:typeof d.title === 'function' ? d.title(s, x) : d.title, desc:d.desc, xp:d.xp, target, unit:d.unit || '',
+    progress:claimed ? target : Math.min(raw, target), claimed, ready:!claimed && d.kind === 'auto' && raw >= target, groupId:x.g ? x.g.id : null};
+}
+function questList(s){
+  const day = s.today.day, wid = s.wk.id;
+  const di = Math.floor(new Date(day + 'T12:00:00').getTime() / DAY);
+  const ids = ['d_session', ['d_min30','d_friends'][di % 2], CHECK_POOL[di % 6], CHECK_POOL[(di + 3) % 6]];
+  const daily = ids.map(id => mkQ(s, id, 'daily', day));
+  const done = daily.filter(q => q.claimed).length;
+  const sk = 'd_all@' + day, sc = !!s.claimed[sk];
+  const sweep = {id:'d_all', key:sk, scope:'daily', kind:'auto', title:'Daily sweep', desc:'Claim all four daily quests.', xp:60, target:4, unit:'', progress:sc ? 4 : done, claimed:sc, ready:!sc && done >= 4, groupId:null, sweep:true};
+  return {daily, sweep,
+    weekly:['w_goal','w_sessions','w_meet'].map(id => mkQ(s, id, 'weekly', wid)),
+    solo:['s_solo','s_long','s_new'].map(id => mkQ(s, id, 'solo', wid)),
+    crews:s.groups.map(g => ({g, quests:['g_min','g_hang','g_meet'].map(id => mkQ(s, id, 'crew', wid, {g}))}))};
+}
+const allQuests = ql => [...ql.daily, ql.sweep, ...ql.weekly, ...ql.solo, ...ql.crews.flatMap(c => c.quests)];
+const readyKeys = s => allQuests(questList(s)).filter(q => q.ready).map(q => q.key);
+
+/* ============================================================
+   4. Achievements, boards, crew league
+   ============================================================ */
+const liveStreak = me => me.lastSessionDay && dayDiff(me.lastSessionDay, dayKey()) <= 1 ? me.streak : 0;
+function board(s, metric = 'week', ids = null){
+  const season = metric === 'season';
+  const all = [{id:'me', name:s.me.name, photo:s.me.photo, xp:season ? s.me.seasonXP : s.me.weekXP, sessions:s.me.sessions, streak:liveStreak(s.me), delta:s.me.rankDelta, isMe:true, level:lvlOf(s.me.total)},
+    ...s.friends.filter(f => f.status === 'friend').map(f => ({id:f.id, name:f.name, photo:null, xp:season ? f.season : f.week, sessions:f.sessions, streak:f.streak, delta:f.delta, isMe:false, level:lvlOf(f.total)}))];
+  const list = ids ? all.filter(r => r.isMe || ids.includes(r.id)) : all;
+  return list.sort((a,b) => b.xp - a.xp).map((r,i) => ({...r, rank:i + 1}));
+}
+const rankOf = (s, metric = 'week') => board(s, metric).find(r => r.isMe).rank;
+const crewXP = (s, g, metric) => (metric === 'season' ? s.me.seasonXP : s.me.weekXP) + g.members.reduce((a,id) => { const f = s.friends.find(x => x.id === id); return a + (f ? (metric === 'season' ? f.season : f.week) : 0); }, 0);
+function crewLeague(s, metric = 'week'){
+  const mine = s.groups.map(g => ({id:g.id, name:g.name, emblem:g.emblem, tone:g.tone, photo:g.photo, size:g.members.length + 1, xp:crewXP(s, g, metric), mine:true}));
+  const rivals = s.rivals.map(r => ({id:r.id, name:r.name, emblem:r.emblem, tone:r.tone, photo:null, size:r.size, xp:metric === 'season' ? r.season : r.week, mine:false}));
+  return [...mine, ...rivals].sort((a,b) => b.xp - a.xp).map((r,i) => ({...r, rank:i + 1}));
+}
+const ACH = [
+  {id:'first', title:'First hangout', desc:'Finish a session', icon:'phoneoff', test:s => s.me.sessions >= 1},
+  {id:'ten', title:'Regular', desc:'Finish 10 sessions', icon:'check', test:s => s.me.sessions >= 10},
+  {id:'streak3', title:'On a roll', desc:'3 day streak', icon:'flame', test:s => liveStreak(s.me) >= 3},
+  {id:'streak7', title:'Week warrior', desc:'7 day streak', icon:'flame', test:s => liveStreak(s.me) >= 7},
+  {id:'lvl5', title:'Contender', desc:'Reach level 5', icon:'star', test:s => lvlOf(s.me.total) >= 5},
+  {id:'table', title:'Full table', desc:'Finish with 3 friends', icon:'hangout', test:s => s.me.pr.group.v >= 3},
+  {id:'deep', title:'Deep focus', desc:'Finish a 60 min session', icon:'clock', test:s => s.me.pr.longest.v >= 60},
+  {id:'podium', title:'Podium', desc:'Reach the weekly top 3', icon:'trophy', test:s => rankOf(s) <= 3},
+  {id:'quests', title:'Questmaster', desc:'Complete 10 quests', icon:'target', test:s => s.qhist.length >= 10},
+  {id:'champ', title:'Crew champions', desc:'Put a crew first in the league', icon:'trophy', test:s => crewLeague(s).some(r => r.mine && r.rank === 1)},
+  {id:'hype', title:'Hype man', desc:'Send 10 reactions', icon:'bolt', test:s => s.me.reacts >= 10},
+  {id:'silver', title:'Silver season', desc:'Reach 1,000 season XP', icon:'star', test:s => s.me.seasonXP >= 1000}
+];
+
+/* ============================================================
+   5. State changes (pure functions)
+   ============================================================ */
+function mkPost(s, p){
+  const post = {id:uid(), ts:Date.now(), reacts:{}, ...p, pend:p.who === 'me'};
+  return {...s, feed:[post, ...s.feed].slice(0, 80)};
+}
+function gainXP(s, xp){
+  const before = lvlOf(s.me.total);
+  const me = {...s.me, total:s.me.total + xp, weekXP:s.me.weekXP + xp, seasonXP:s.me.seasonXP + xp};
+  if(me.weekXP > me.pr.weekXP.v) me.pr = {...me.pr, weekXP:{v:me.weekXP, ts:Date.now()}};
+  const after = lvlOf(me.total);
+  return {s:{...s, me}, level:after > before ? after : null};
+}
+function checkAch(s){
+  const fresh = ACH.filter(a => !s.me.unlocked[a.id] && a.test(s));
+  if(!fresh.length) return {s, fresh:[]};
+  let st = {...s, me:{...s.me, unlocked:{...s.me.unlocked, ...Object.fromEntries(fresh.map(a => [a.id, Date.now()]))}}};
+  if(s.settings.autoShare) fresh.forEach(a => { st = mkPost(st, {who:'me', kind:'ach', title:a.title, sub:'Achievement unlocked', icon:a.icon}); });
+  return {s:st, fresh:fresh.map(a => a.id)};
+}
+function awardQuest(s, q, o = {}){
+  const share = o.share !== undefined ? o.share : s.settings.autoShare;
+  let st = {...s, claimed:{...s.claimed, [q.key]:Date.now()},
+    qhist:[{id:uid(), title:q.title, xp:q.xp, ts:Date.now(), scope:q.scope, group:q.groupId}, ...s.qhist].slice(0, 80)};
+  const g = gainXP(st, q.xp); st = g.s;
+  if(share) st = mkPost(st, {who:'me', kind:'quest', title:q.title, sub:SCOPE[q.scope] + ' quest complete', xp:q.xp, note:o.note || '', group:q.groupId || undefined});
+  if(g.level && share) st = mkPost(st, {who:'me', kind:'level', title:'Level ' + g.level, sub:titleOf(g.level)});
+  const a = checkAch(st); st = a.s;
+  return {s:st, reward:{title:q.title, xp:q.xp, level:g.level, ach:a.fresh}};
+}
+function bumpPR(st, key, val, label, broke){
+  if(val > st.me.pr[key].v){ broke.push(label); return {...st, me:{...st.me, pr:{...st.me.pr, [key]:{v:val, ts:Date.now()}}}}; }
+  return st;
+}
+function finishSession(s){
+  const x = s.session, now = Date.now(), today = dayKey();
+  const stay = x.members.filter(m => m.dropAt == null).map(m => m.id);
+  const rankBefore = rankOf(s);
+  const gap = s.me.lastSessionDay ? dayDiff(s.me.lastSessionDay, today) : 99;
+  const streak = gap === 0 ? s.me.streak : gap === 1 ? s.me.streak + 1 : 1;
+  const sc = score(x.mins, stay.length, streak);
+  const fx = Math.round(sc.total * POINTS.friendShare);
+  const week = [...s.me.week]; week[6] += x.mins;
+  const hang = {...s.wk.hangouts};
+  s.groups.forEach(g => { if(g.members.some(id => stay.includes(id))) hang[g.id] = (hang[g.id] || 0) + 1; });
+  let st = {...s,
+    me:{...s.me, sessions:s.me.sessions + 1, streak, lastSessionDay:today, week},
+    today:{...s.today, sessions:s.today.sessions + 1, mins:s.today.mins + x.mins, maxFriends:Math.max(s.today.maxFriends, stay.length), solo:s.today.solo + (stay.length === 0 ? 1 : 0)},
+    wk:{...s.wk, sessions:s.wk.sessions + 1, mins:s.wk.mins + x.mins, solo:s.wk.solo + (stay.length === 0 && x.mins >= 25 ? 1 : 0), longest:Math.max(s.wk.longest, x.mins), hangouts:hang},
+    friends:s.friends.map(f => stay.includes(f.id) ? {...f, week:f.week + fx, season:f.season + fx, total:f.total + fx, wmin:f.wmin + x.mins, sessions:f.sessions + 1, lastTs:now} : f)};
+  const g = gainXP(st, sc.total); st = g.s;
+  const broke = [];
+  st = bumpPR(st, 'longest', x.mins, 'Longest session', broke);
+  st = bumpPR(st, 'dayMin', st.today.mins, 'Most minutes in a day', broke);
+  st = bumpPR(st, 'group', stay.length, 'Biggest hangout', broke);
+  st = bumpPR(st, 'streak', streak, 'Longest streak', broke);
+  const rankAfter = rankOf(st);
+  st = {...st, me:{...st.me, rankDelta:rankBefore - rankAfter}};
+  const names = stay.map(id => s.friends.find(f => f.id === id)).filter(Boolean).map(f => first(f.name));
+  const withTxt = names.length ? 'with ' + names.join(' and ') : 'on my own';
+  const share = s.settings.autoShare;
+  if(share) st = mkPost(st, {who:'me', kind:'session', title:x.mins + ' min ' + (names.length ? 'hangout' : 'session'), sub:withTxt, xp:sc.total});
+  if(g.level && share) st = mkPost(st, {who:'me', kind:'level', title:'Level ' + g.level, sub:titleOf(g.level)});
+  const a = checkAch(st); st = a.s;
+  st = {...st, history:[{id:uid(), title:names.length ? 'Hangout with ' + names.join(' and ') : 'Solo session', mins:x.mins, pts:sc.total, ts:now}, ...st.history],
+    session:{...x, phase:'done', result:{lines:sc.lines, total:sc.total, mins:x.mins, rankBefore, rankAfter, level:g.level, ach:a.fresh, broke, shared:share, withTxt}}};
+  return st;
+}
+function addReact(s, pid, who, type, force){
+  return {...s, feed:s.feed.map(p => {
+    if(p.id !== pid) return p;
+    const cur = p.reacts[type] || [], has = cur.includes(who);
+    const nxt = force === 'add' ? (has ? cur : [...cur, who]) : has ? cur.filter(x => x !== who) : [...cur, who];
+    return {...p, reacts:{...p.reacts, [type]:nxt}};
+  })};
+}
+const inCrewFeed = (g, p) => p.group === g.id || (!p.group && (p.who === 'me' || g.members.includes(p.who)));
+
+/* ============================================================
+   6. Seed data, rollover, persistence
+   ============================================================ */
+const DEF_LOOK = {theme:'dark', accent:'#8B6CFF', density:'roomy', type:'sport', corners:'soft', motion:true, stats:false, labels:true};
+const HOME_KEYS = ['status','start','quests','feed','season'];
+const TAB_KEYS = ['home','quests','ranks','crews'];
+const DEF_HOME = {order:['status','start','quests','feed','season'], hidden:{season:true}};
+function fixSettings(s){
+  const st = s.settings; let ch = false, look = st.look, home = st.home, tabs = st.tabs;
+  if(!look){ look = {...DEF_LOOK}; ch = true; }
+  if(!home || HOME_KEYS.some(k => !home.order.includes(k))){ home = {order:[...(home ? home.order : []), ...HOME_KEYS].filter((k,i,a) => a.indexOf(k) === i && HOME_KEYS.includes(k)), hidden:home ? home.hidden : {...DEF_HOME.hidden}}; ch = true; }
+  if(!tabs || TAB_KEYS.some(k => !tabs.order.includes(k))){ tabs = {order:[...(tabs ? tabs.order : []), ...TAB_KEYS].filter((k,i,a) => a.indexOf(k) === i && TAB_KEYS.includes(k)), hidden:tabs ? tabs.hidden : {}}; ch = true; }
+  return ch ? {...s, settings:{...st, look, home, tabs}} : s;
+}
+function seed(){
+  const t = Date.now(), old = t - 9 * DAY, wid = weekId();
+  const f = (id,name,handle,week,season,total,wmin,sessions,streak,delta,lastMin) => ({id,name,handle,week,season,total,wmin,sessions,streak,delta,lastTs:t - lastMin * MIN,status:'friend'});
+  const s = {v:2, onboarded:false,
+    me:{name:'Cole Peterson', handle:'cole', photo:null, total:1340, weekXP:215, seasonXP:820, sessions:18, streak:3, lastSessionDay:dayKey(new Date(t - DAY)),
+      week:[30,0,40,0,45,35,0], rankDelta:0, unlocked:{}, reacts:0,
+      pr:{longest:{v:45,ts:old}, dayMin:{v:75,ts:old}, weekXP:{v:312,ts:old}, streak:{v:6,ts:old}, group:{v:2,ts:old}}},
+    today:{day:dayKey(), sessions:0, mins:0, maxFriends:0, solo:0},
+    wk:{id:wid, sessions:2, mins:80, solo:1, longest:45, hangouts:{g2:1}},
+    season:{id:seasonId()},
+    friends:[f('maya','Maya Chen','mayachen',380,1240,2140,266,41,9,1,42), f('sam','Sam Okafor','samo',342,1090,1810,239,36,5,0,130),
+      f('priya','Priya Nair','priyan',298,960,1560,209,30,4,-1,310), f('jordan','Jordan Reyes','jreyes',262,870,1205,183,27,2,0,1500),
+      f('luca','Luca Bianchi','lucab',188,650,860,132,19,1,1,2900), f('ava','Ava Thompson','avat',143,470,640,100,14,0,-1,4300), f('noah','Noah Kim','noahk',96,310,410,67,9,0,0,7200)],
+    rivals:[{id:'r1',name:'Northside Runners',emblem:'flame',tone:'white',size:6,week:1180,season:3300},{id:'r2',name:'The Sundays',emblem:'heart',tone:'lilac',size:5,week:760,season:2200},
+      {id:'r3',name:'Late Night Lounge',emblem:'clock',tone:'ink',size:4,week:610,season:1800},{id:'r4',name:'Campus Four',emblem:'target',tone:'violet',size:4,week:480,season:1400}],
+    groups:[{id:'g1',name:'Roommates',emblem:'hangout',tone:'white',photo:null,members:['maya','jordan']},{id:'g2',name:'Climbing Crew',emblem:'bolt',tone:'violet',photo:null,members:['sam','priya','luca']}],
+    checks:{['w_meet@' + wid]:1}, claimed:{},
+    qhist:[{id:'q1',title:'Take a 15 minute walk',xp:30,ts:t - 3 * DAY,scope:'daily',group:null},{id:'q2',title:'Finish 5 sessions',xp:100,ts:t - 9 * DAY,scope:'weekly',group:null},{id:'q3',title:'Solo reset',xp:60,ts:t - 10 * DAY,scope:'solo',group:null}],
+    feed:[
+      {id:'f1',who:'maya',kind:'session',title:'45 min hangout',sub:'with Jordan',xp:78,group:'g1',ts:t - 42 * MIN,reacts:{fire:['sam','jordan'],heart:['priya']}},
+      {id:'f2',who:'sam',kind:'quest',title:'Meet up in person 3 times',sub:'Weekly quest complete',xp:150,ts:t - 130 * MIN,reacts:{bolt:['maya']}},
+      {id:'f3',who:'jordan',kind:'status',text:'Phones in the drawer, board games out. Thursday at mine if anyone is in.',group:'g1',ts:t - 300 * MIN,reacts:{heart:['maya']}},
+      {id:'f4',who:'priya',kind:'ach',title:'Deep focus',sub:'Achievement unlocked',icon:'clock',group:'g2',ts:t - 420 * MIN,reacts:{fire:['sam','luca']}},
+      {id:'f5',who:'luca',kind:'level',title:'Level 4',sub:'Regular',ts:t - 900 * MIN,reacts:{}},
+      {id:'f6',who:'me',kind:'session',title:'25 min session',sub:'with Maya',xp:55,ts:t - 26 * 60 * MIN,reacts:{fire:['maya','sam']}}],
+    history:[{id:'h1',title:'Hangout with Maya and Jordan',mins:45,pts:78,ts:t - 26 * 60 * MIN},{id:'h2',title:'Solo session',mins:25,pts:50,ts:t - 52 * 60 * MIN},{id:'h3',title:'Hangout with Sam',mins:25,pts:55,ts:t - 77 * 60 * MIN}],
+    lastWeek:null, session:null,
+    settings:{notif:{react:true, quests:true}, autoShare:true, goalMin:240, speed:60, look:{...DEF_LOOK}, home:{order:[...DEF_HOME.order], hidden:{...DEF_HOME.hidden}}, tabs:{order:[...TAB_KEYS], hidden:{}}}};
+  s.me.unlocked = Object.fromEntries(ACH.filter(a => a.test(s)).map(a => [a.id, old]));
+  return s;
+}
+function normalize(s){
+  s = fixSettings(s);
+  const now = new Date(), today = dayKey(now), wid = weekId(now), sid = seasonId(now);
+  if(s.today.day !== today){
+    const d = dayDiff(s.today.day, today), w = [...s.me.week];
+    for(let i = 0; i < Math.min(d, 7); i++){ w.shift(); w.push(0); }
+    s = {...s, me:{...s.me, week:w}, today:{day:today, sessions:0, mins:0, maxFriends:0, solo:0}};
+  }
+  if(s.wk.id !== wid){
+    const rows = board(s, 'week'), me = rows.find(r => r.isMe);
+    s = {...s, lastWeek:{winner:rows[0].isMe ? 'You' : rows[0].name, winnerXP:rows[0].xp, myRank:me.rank, myXP:me.xp, size:rows.length},
+      me:{...s.me, weekXP:0, rankDelta:0}, wk:{id:wid, sessions:0, mins:0, solo:0, longest:0, hangouts:{}},
+      friends:s.friends.map(f => ({...f, week:Math.round(f.week * rnd(.04,.2)), wmin:Math.round(f.wmin * rnd(.04,.2))})),
+      rivals:s.rivals.map(r => ({...r, week:Math.round(r.week * rnd(.04,.2))}))};
+  }
+  if(s.season.id !== sid){
+    s = {...s, season:{id:sid}, me:{...s.me, seasonXP:0},
+      friends:s.friends.map(f => ({...f, season:Math.round(f.season * rnd(.03,.1))})), rivals:s.rivals.map(r => ({...r, season:Math.round(r.season * rnd(.03,.1))}))};
+  }
+  if(s.friends.some(f => f.status === 'pending')) s = {...s, friends:s.friends.map(f => f.status === 'pending' ? {...f, status:'friend'} : f)};
+  if(s.session && s.session.phase === 'lobby' && Date.now() - s.session.createdAt > 10 * MIN) s = {...s, session:null};
+  return s;
+}
+function load(){
+  try{ const raw = localStorage.getItem(KEY); if(raw){ const p = JSON.parse(raw); if(p && p.v === 2) return normalize(p); } }catch(e){}
+  return seed();
+}
+const elapsedOf = (ss, now) => Math.min(ss.mins * 60, Math.max(0, (now - ss.startRealTs) / 1000 * ss.speed));
+/*==LOGIC_END==*/
+
+/* ============================================================
+   7. UI primitives
+   ============================================================ */
+const ICONS = {
+  home:'<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  hangout:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.3 2.9-5.5 6.5-5.5s6.5 2.2 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8"/><path d="M18.5 14.8c1.8.7 3 2.3 3 5.2"/>',
+  trophy:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/>',
+  friends:'<circle cx="10" cy="8" r="3.5"/><path d="M3 20c0-3.3 3.1-5.5 7-5.5s7 2.2 7 5.5"/><path d="M19 8v6M16 11h6"/>',
+  settings:'<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  menu:'<path d="M4 6h16M4 12h16M4 18h16"/>',
+  check:'<path d="m5 12.5 4.5 4.5L19 7.5"/>',
+  x:'<path d="M6 6l12 12M18 6 6 18"/>',
+  chevron:'<path d="m9 6 6 6-6 6"/>',
+  back:'<path d="m15 6-6 6 6 6"/>',
+  flame:'<path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2 1-3.2 2-4 .2 1.2.8 2 1.6 2.4C10.3 8.5 10.5 5.5 12 3z"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  star:'<path d="m12 3 2.6 5.6 6 .8-4.4 4.1 1.1 6L12 16.7 6.7 19.5l1.1-6L3.4 9.4l6-.8z"/>',
+  phoneoff:'<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M3 3l18 18"/>',
+  copy:'<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/>',
+  bolt:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+  heart:'<path d="M12 20.5C6 16.5 3.5 13.5 3.5 10A4.5 4.5 0 0 1 12 7.8 4.5 4.5 0 0 1 20.5 10c0 3.5-2.5 6.5-8.5 10.5z"/>',
+  target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".8"/>',
+  send:'<path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/>',
+  image:'<rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="m4 18 5-5 4 4 3-3 4 4"/>'
+};
+function Icon({name, size = 22}){
+  return html`<svg width=${size} height=${size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" dangerouslySetInnerHTML=${{__html:ICONS[name] || ''}}></svg>`;
+}
+function Avatar({name, size = 40, me, photo}){
+  return html`<div className=${'avatar' + (me ? ' me' : '')} style=${{width:size, height:size, fontSize:Math.round(size * .42)}}>${photo ? html`<img src=${photo} alt=""/>` : initials(name)}</div>`;
+}
+function CrewMark({g, size = 48}){
+  const t = TONES[g.tone] || TONES.violet, r = Math.round(size * .3);
+  return html`<div className="crewmark" style=${{width:size, height:size, background:t.bg, color:t.fg, borderRadius:r}}>${g.photo ? html`<img src=${g.photo} alt=""/>` : html`<${Icon} name=${g.emblem} size=${Math.round(size * .5)}/>`}</div>`;
+}
+function Seg({items, value, onChange}){
+  return html`<div className="seg" role="tablist">${items.map(i => html`<button key=${i.k} role="tab" aria-selected=${value === i.k} onClick=${() => onChange(i.k)}>${i.label}${i.n > 0 && html`<i>${i.n}</i>`}</button>`)}</div>`;
+}
+function Toggle({on, onChange, label}){
+  return html`<button className="switch" role="switch" aria-checked=${on} aria-label=${label} onClick=${() => onChange(!on)}></button>`;
+}
+function Sheet({onClose, children}){
+  return html`<div><div className="scrim" onClick=${onClose}></div><div className="sheet" role="dialog" aria-modal="true"><div className="grab"></div>${children}</div></div>`;
+}
+function MiniRing({pct, size = 46, done, children}){
+  const r = (size - 6) / 2, c = 2 * Math.PI * r, h = size / 2;
+  return html`<div className="mring" style=${{width:size, height:size}}>
+    <svg width=${size} height=${size} viewBox=${'0 0 ' + size + ' ' + size}><circle cx=${h} cy=${h} r=${r} fill="none" stroke="var(--surface-3)" strokeWidth="4"/>
+    <circle cx=${h} cy=${h} r=${r} fill="none" stroke=${done ? 'var(--fg)' : 'var(--accent)'} strokeWidth="4" strokeLinecap="round" strokeDasharray=${c} strokeDashoffset=${c * (1 - Math.max(0, Math.min(1, pct)))} transform=${'rotate(-90 ' + h + ' ' + h + ')'} style=${{transition:'stroke-dashoffset .6s'}}/></svg>
+    <div className="mring-c">${children}</div></div>`;
+}
+function Ring({pct, children}){
+  const r = 112, c = 2 * Math.PI * r;
+  return html`<div className="ring-wrap"><svg viewBox="0 0 260 260"><circle cx="130" cy="130" r=${r} fill="none" stroke="var(--surface-3)" strokeWidth="10"/>
+    <circle cx="130" cy="130" r=${r} fill="none" stroke="var(--accent)" strokeWidth="10" strokeLinecap="round" strokeDasharray=${c} strokeDashoffset=${c * (1 - pct)}/></svg><div className="ring-center">${children}</div></div>`;
+}
+function useCountUp(to, dur = 900){
+  const [v, setV] = useState(0);
+  useEffect(() => {
+    let raf, t0; const step = t => { if(!t0) t0 = t; const p = Math.min(1, (t - t0) / dur); setV(Math.round(to * (1 - Math.pow(1 - p, 3)))); if(p < 1) raf = requestAnimationFrame(step); };
+    raf = requestAnimationFrame(step); return () => cancelAnimationFrame(raf);
+  }, [to]);
+  return v;
+}
+function onColor(hex){
+  const h = hex.replace('#', ''), n = parseInt(h.length === 3 ? h.split('').map(c => c + c).join('') : h, 16);
+  return (0.299 * (n >> 16 & 255) + 0.587 * (n >> 8 & 255) + 0.114 * (n & 255)) / 255 > .62 ? '#0A0A0B' : '#FFFFFF';
+}
+function applyLook(L){
+  const r = document.documentElement; let theme = L.theme;
+  if(theme === 'auto'){ try{ theme = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'; }catch(e){ theme = 'dark'; } }
+  r.dataset.look = theme; r.dataset.density = L.density; r.dataset.type = L.type; r.dataset.corners = L.corners;
+  r.dataset.motion = L.motion ? 'on' : 'off'; r.dataset.labels = L.labels ? 'on' : 'off';
+  r.style.setProperty('--accent', L.accent); r.style.setProperty('--on-accent', onColor(L.accent)); r.style.colorScheme = theme;
+}
+function readPhoto(file, cb){
+  const r = new FileReader();
+  r.onload = () => { const img = new Image(); img.onload = () => {
+    const c = document.createElement('canvas'), S = 160; c.width = c.height = S;
+    const m = Math.min(img.width, img.height); c.getContext('2d').drawImage(img, (img.width - m) / 2, (img.height - m) / 2, m, m, 0, 0, S, S);
+    try{ cb(c.toDataURL('image/jpeg', .82)); }catch(e){}
+  }; img.src = r.result; };
+  r.readAsDataURL(file);
+}
+function PhotoBtn({onPick, label = 'Upload photo'}){
+  return html`<label className="btn-sm"><${Icon} name="image" size=${15}/>${label}<input type="file" accept="image/*" hidden onChange=${e => { const f = e.target.files[0]; if(f) readPhoto(f, onPick); e.target.value = ''; }}/></label>`;
+}
+const Ctx = React.createContext(null);
+const useApp = () => React.useContext(Ctx);
+
+function Head({eyebrow, title, sub, right}){
+  return html`<div className="head"><div className="grow"><p className="eyebrow">${eyebrow}</p><h1>${title}</h1>${sub && html`<p className="sub">${sub}</p>`}</div>${right === undefined ? html`<${MeBtn}/>` : right}</div>`;
+}
+function Navigation({tabs, current, live, go}){
+  const [open, setOpen] = useState(false);
+  const mobileRef = useRef(null), toggleRef = useRef(null);
+  const choose = tab => { setOpen(false); go(tab); };
+  useEffect(() => { setOpen(false); }, [current]);
+  useEffect(() => {
+    if(!open) return;
+    const dismiss = e => {
+      if(e.type === 'keydown'){
+        if(e.key !== 'Escape') return;
+        setOpen(false); toggleRef.current?.focus();
+      }else if(!mobileRef.current?.contains(e.target)) setOpen(false);
+    };
+    const desktop = matchMedia('(min-width:768px)');
+    const resized = () => { if(desktop.matches) setOpen(false); };
+    document.addEventListener('pointerdown', dismiss);
+    document.addEventListener('keydown', dismiss);
+    desktop.addEventListener('change', resized);
+    return () => {
+      document.removeEventListener('pointerdown', dismiss);
+      document.removeEventListener('keydown', dismiss);
+      desktop.removeEventListener('change', resized);
+    };
+  }, [open]);
+  return html`<${React.Fragment}>
+    <nav className="tabbar desktop-nav" aria-label="Main" style=${{gridTemplateColumns:tabs.map(t => t.k === 'hangout' ? '1.2fr' : '1fr').join(' ')}}>${tabs.map(t => t.k === 'hangout'
+      ? html`<div key=${t.k} className="play"><button className=${'play-btn' + (live ? ' live' : '')} aria-label="Start a hangout" aria-current=${current === 'hangout' ? 'page' : undefined} onClick=${() => go('hangout')}><${Icon} name="phoneoff" size=${28}/></button></div>`
+      : html`<button key=${t.k} className="tab" aria-current=${current === t.k ? 'page' : undefined} onClick=${() => go(t.k)}><${Icon} name=${t.icon} size=${23}/><span>${t.label}</span>${t.n > 0 && html`<i>${t.n}</i>`}</button>`)}</nav>
+    <nav className="mobile-nav" aria-label="Main" ref=${mobileRef} onBlur=${e => { if(!e.currentTarget.contains(e.relatedTarget)) setOpen(false); }}>
+      <button className="mobile-nav-toggle" ref=${toggleRef} aria-expanded=${open} aria-controls="mobile-navigation" onClick=${() => setOpen(v => !v)}><${Icon} name=${open ? 'x' : 'menu'}/><span>Menu</span></button>
+      <div className="mobile-nav-links" id="mobile-navigation" hidden=${!open}>
+        ${tabs.filter(t => t.k !== 'hangout').map(t => html`<button key=${t.k} aria-current=${current === t.k ? 'page' : undefined} onClick=${() => { choose(t.k); toggleRef.current?.focus(); }}><${Icon} name=${t.icon}/><span>${t.label}</span>${t.n > 0 && html`<span className="pill">${t.n}</span>`}</button>`)}
+      </div>
+      <button className=${'mobile-nav-play' + (live ? ' live' : '')} aria-current=${current === 'hangout' ? 'page' : undefined} onClick=${() => choose('hangout')}><${Icon} name="phoneoff"/><span>${live ? 'Resume' : 'Play'}</span></button>
+    </nav>
+  <//>`;
+}
+function MeBtn(){
+  const {state, openProfile} = useApp();
+  return html`<button className="mebtn" aria-label="Open profile" onClick=${openProfile}><${Avatar} name=${state.me.name} photo=${state.me.photo} size=${42} me=${true}/><span className="mebadge">${lvlOf(state.me.total)}</span></button>`;
+}
+function Section({title, right, children}){
+  return html`<div className="sec"><div className="sec-h"><h2>${title}</h2>${right}</div>${children}</div>`;
+}
+
+/* ============================================================
+   8. Quests UI
+   ============================================================ */
+function QuestRow({q, compact}){
+  const {claim, setSheet} = useApp();
+  const pct = q.progress / q.target;
+  const label = q.target > 1 ? (q.target <= 9 ? q.progress + '/' + q.target : Math.round(pct * 100) + '%') : null;
+  const showProg = q.target > 1 && q.unit;
+  return html`<div className=${(compact ? 'mini-q' : 'quest') + (q.claimed ? ' done' : '') + (q.sweep && !compact ? ' sweep' : '')}>
+    <${MiniRing} pct=${pct} done=${q.claimed} size=${compact ? 38 : 48}>${q.claimed ? html`<${Icon} name="check" size=${compact ? 15 : 19}/>` : label ? html`<span style=${{fontSize:compact ? 12 : 15}}>${label}</span>` : html`<${Icon} name=${q.kind === 'auto' ? 'phoneoff' : 'target'} size=${compact ? 14 : 18}/>`}<//>
+    <div className="grow">
+      <p className=${compact ? 'ellip' : 'q-title'} style=${compact ? {fontWeight:600, fontSize:14.5} : null}>${q.title}</p>
+      ${!compact && html`<p className="q-desc">${showProg && !q.claimed ? q.progress + ' of ' + q.target + ' ' + q.unit + '. ' : ''}${q.desc}</p>`}
+      ${!compact && html`<div className="q-meta"><span className=${'xp' + (q.claimed ? ' dim' : '')}>+${q.xp} XP</span>${q.target > 1 && !q.claimed && !showProg && html`<span className="muted" style=${{fontSize:12.5}}>${q.progress} of ${q.target}</span>`}</div>`}
+    </div>
+    ${q.ready && html`<button className="cta violet sm" onClick=${() => claim(q)}>Claim</button>`}
+    ${!q.ready && !q.claimed && q.kind === 'check' && html`<button className="btn-sm solid" onClick=${() => setSheet({type:'checkin', q})}>Check in</button>`}
+    ${compact && !q.ready && (q.claimed || q.kind === 'auto') && html`<span className=${'xp' + (q.claimed ? ' dim' : '')}>+${q.xp}</span>`}
+  </div>`;
+}
+
+function Quests(){
+  const {state, go, openCrew, setSheet} = useApp();
+  const [tab, setTab] = useState('daily');
+  const ql = questList(state);
+  const n = list => list.filter(q => q.ready).length;
+  const dailyAll = [...ql.daily, ql.sweep];
+  const wkXP = state.qhist.filter(h => h.ts > Date.now() - 7 * DAY).reduce((a,h) => a + h.xp, 0);
+  const lp = lvlProg(state.me.total);
+  return html`<div className="screen">
+    <${Head} eyebrow="Quests" title=${html`Play it <em>for real.</em>`} sub="Small things away from your phone. Big XP."/>
+    <${Seg} items=${[{k:'daily',label:'Daily',n:n(dailyAll)},{k:'weekly',label:'Weekly',n:n([...ql.weekly, ...ql.solo])},{k:'crew',label:'Crew',n:n(ql.crews.flatMap(c => c.quests))},{k:'history',label:'History'}]} value=${tab} onChange=${setTab}/>
+    ${tab === 'daily' && html`<${Section} title="Today" right=${html`<span className="muted" style=${{fontSize:13}}>Resets in ${untilDay()}</span>`}>
+      <div className="card tight">${ql.daily.map(q => html`<${QuestRow} key=${q.key} q=${q}/>`)}</div>
+      <${QuestRow} q=${ql.sweep}/>
+    <//>`}
+    ${tab === 'weekly' && html`<div className="sec">
+      <${Section} title="This week" right=${html`<span className="muted" style=${{fontSize:13}}>Resets in ${untilWeek()}</span>`}><div className="card tight">${ql.weekly.map(q => html`<${QuestRow} key=${q.key} q=${q}/>`)}</div><//>
+      <${Section} title="Individual"><div className="card tight">${ql.solo.map(q => html`<${QuestRow} key=${q.key} q=${q}/>`)}</div><//>
+    </div>`}
+    ${tab === 'crew' && (ql.crews.length === 0 ? html`<div className="card empty"><p>Crew quests need a crew. Create one and the whole group earns together.</p><button className="cta violet sm" onClick=${() => setSheet({type:'crew'})}>Create a crew</button></div>` :
+      html`<div className="sec">${ql.crews.map(c => html`<${Section} key=${c.g.id} title=${c.g.name} right=${html`<button className="link" onClick=${() => openCrew(c.g.id)}>Open crew</button>`}><div className="card tight">${c.quests.map(q => html`<${QuestRow} key=${q.key} q=${q}/>`)}</div><//>`)}</div>`)}
+    ${tab === 'history' && html`<${Section} title="Completed" right=${html`<span className="muted" style=${{fontSize:13}}>${state.qhist.length} quests, ${num(state.qhist.reduce((a,h) => a + h.xp, 0))} XP</span>`}>
+      ${state.qhist.length === 0 ? html`<div className="card empty"><p>Nothing yet. Finish a quest and it lands here.</p></div>` :
+        html`<div className="card tight">${state.qhist.map(h => { const g = h.group && state.groups.find(x => x.id === h.group); return html`<div key=${h.id} className="row"><div className="grow"><p style=${{fontWeight:600}}>${h.title}</p><p className="muted" style=${{fontSize:12.5}}>${SCOPE[h.scope]}${g ? ' · ' + g.name : ''} · ${ago(h.ts)}</p></div><span className="xp">+${h.xp} XP</span></div>`; })}</div>`}
+    <//>`}
+  </div>`;
+}
+
+function CheckinSheet({q}){
+  const {state, setSheet, checkIn} = useApp();
+  const [note, setNote] = useState('');
+  const [share, setShare] = useState(state.settings.autoShare);
+  const step = (state.checks[q.key] || 0) + 1, last = step >= q.target;
+  return html`<${Sheet} onClose=${() => setSheet(null)}>
+    <p className="eyebrow">${SCOPE[q.scope]} quest${q.target > 1 ? ' · check in ' + step + ' of ' + q.target : ''}</p>
+    <h2 style=${{margin:'6px 0 4px', fontSize:28}}>${q.title}</h2>
+    <p className="muted" style=${{marginBottom:18}}>${last ? 'This one completes the quest and pays +' + q.xp + ' XP.' : 'Log each time. XP lands when you finish all ' + q.target + '.'}</p>
+    <label className="label" htmlFor="ck-note">Add a note (optional)</label>
+    <input id="ck-note" className="field" maxLength=${90} placeholder="What did you do?" value=${note} onChange=${e => setNote(e.target.value)}/>
+    <div className="between" style=${{margin:'18px 0 20px'}}><span>Share to feed</span><${Toggle} on=${share} label="Share to feed" onChange=${setShare}/></div>
+    <button className="cta violet" onClick=${() => checkIn(q, note.trim(), share)}>${last ? 'Complete quest' : 'Check in'}</button>
+  <//>`;
+}
+
+function Reward({r, onClose}){
+  const n = useCountUp(r.xp);
+  return html`<div className="reward" role="dialog" aria-modal="true"><div className="rw-glow"></div>
+    <div className="rw-in">
+      <p className="eyebrow">${r.kind || 'Quest complete'}</p>
+      <h2 className="rw-title">${r.title}</h2>
+      <div className="rw-xp num">+${n}<small>XP</small></div>
+      ${r.level && html`<div className="vis"><p className="eyebrow" style=${{color:'var(--accent-hi)'}}>Level up</p><div className="lvl big"><small>LV</small><b>${r.level}</b></div><p className="disp" style=${{fontSize:24}}>${titleOf(r.level)}</p></div>`}
+      ${r.ach && r.ach.map(id => { const a = ACH.find(x => x.id === id); return html`<div key=${id} className="pcard" style=${{width:'100%', textAlign:'left'}}><div className="pi"><${Icon} name=${a.icon} size=${20}/></div><div><p className="eyebrow">Achievement unlocked</p><b>${a.title}</b></div></div>`; })}
+      <button className="cta violet" style=${{marginTop:6}} onClick=${onClose}>Keep going</button>
+    </div></div>`;
+}
+
+/* ============================================================
+   9. Feed
+   ============================================================ */
+function Post({p}){
+  const {state, react, openFriend, openCrew} = useApp();
+  const mine = p.who === 'me', f = mine ? null : state.friends.find(x => x.id === p.who);
+  if(!mine && !f) return null;
+  const g = p.group && state.groups.find(x => x.id === p.group);
+  const verb = {session:'finished a session', quest:'completed a quest', ach:'unlocked an achievement', level:'leveled up', status:'posted'}[p.kind];
+  const icon = p.kind === 'ach' ? p.icon : p.kind === 'quest' ? 'target' : p.kind === 'level' ? 'star' : 'phoneoff';
+  return html`<div className="post">
+    <div className="post-h">
+      <button onClick=${() => !mine && openFriend(f.id)}><${Avatar} name=${mine ? state.me.name : f.name} photo=${mine ? state.me.photo : null} me=${mine}/></button>
+      <div className="grow"><p className="ellip"><b>${mine ? 'You' : f.name}</b> <span className="muted">${verb}</span></p><p className="muted" style=${{fontSize:12.5}}>${ago(p.ts)}</p></div>
+      ${g && html`<button className="tag ellip" onClick=${() => openCrew(g.id)}>${g.name}</button>`}
+    </div>
+    ${p.kind === 'status' ? html`<p className="quote">${p.text}</p>` : html`<div className=${'pcard' + (p.kind === 'level' ? ' lv' : '')}><div className="pi"><${Icon} name=${icon} size=${20}/></div><div className="grow"><b className="ellip" style=${{display:'block'}}>${p.title}</b><p className="muted ellip" style=${{fontSize:13}}>${p.sub}</p></div>${p.xp > 0 && html`<span className="xp">+${p.xp} XP</span>`}</div>`}
+    ${p.note && html`<p className="note">“${p.note}”</p>`}
+    <div className="reacts">${REACTS.map(r => { const ids = p.reacts[r.k] || []; return html`<button key=${r.k} className="react" aria-pressed=${ids.includes('me')} aria-label=${r.k} onClick=${() => react(p.id, r.k)}><${Icon} name=${r.icon} size=${16}/>${ids.length > 0 && html`<span className="num">${ids.length}</span>`}</button>`; })}</div>
+  </div>`;
+}
+function Composer({groupId}){
+  const {state, postStatus} = useApp();
+  const [t, setT] = useState('');
+  const [to, setTo] = useState(groupId || '');
+  const send = () => { if(!t.trim()) return; postStatus(t.trim(), to || undefined); setT(''); };
+  return html`<div className="stack" style=${{gap:10}}>
+    <div className="composer"><input id=${'composer-' + (groupId || 'all')} className="field" maxLength=${140} placeholder="Share what you are up to" value=${t} onChange=${e => setT(e.target.value)} onKeyDown=${e => e.key === 'Enter' && send()}/>
+      <button className="iconbtn" style=${{width:52, height:52, background:'var(--accent)', borderColor:'var(--accent)', color:'var(--on-accent)'}} aria-label="Post" disabled=${!t.trim()} onClick=${send}><${Icon} name="send" size=${20}/></button></div>
+    ${!groupId && state.groups.length > 0 && t.trim() && html`<div className="scroll-x"><button className="chip" aria-pressed=${to === ''} onClick=${() => setTo('')}>All friends</button>${state.groups.map(g => html`<button key=${g.id} className="chip" aria-pressed=${to === g.id} onClick=${() => setTo(g.id)}>${g.name}</button>`)}</div>`}
+  </div>`;
+}
+
+/* ============================================================
+   10. Home
+   ============================================================ */
+function SeasonCard({compact}){
+  const {state, go} = useApp();
+  const xp = state.me.seasonXP, t = tierInfo(xp);
+  const inner = html`<div className="stack" style=${{gap:12}}>
+    <div className="between"><div><p className="eyebrow">${seasonName()} · ${seasonDaysLeft()} days left</p><p className="hero-name" style=${{marginTop:4}}>${t.name}</p></div><div style=${{textAlign:'right'}}><p className="xp-num num">${num(xp)}</p><p className="eyebrow">Season XP</p></div></div>
+    <div className="bar"><i style=${{width:Math.round(t.pct * 100) + '%'}}></i></div>
+    ${t.next ? html`<p className="muted" style=${{fontSize:13}}>${t.toNext} XP to ${t.next.k}</p>` : html`<p className="muted" style=${{fontSize:13}}>Top tier reached</p>`}
+    ${!compact && html`<div className="tiers">${TIERS.map((x,i) => html`<div key=${x.k} className=${'tier' + (i <= t.cur ? ' on' : '')}><div className="bar"><i style=${{width:(i <= t.cur ? 100 : i === t.cur + 1 ? Math.round(t.pct * 100) : 0) + '%'}}></i></div><span>${x.k} ${num(x.xp)}</span></div>`)}</div>`}
+  </div>`;
+  return compact ? html`<button className="card" onClick=${() => go('ranks')}>${inner}</button>` : html`<div className="card">${inner}</div>`;
+}
+
+function Home(){
+  const {state, go, openCustomize} = useApp();
+  const [filter, setFilter] = useState('all'), [more, setMore] = useState(false);
+  const me = state.me, lp = lvlProg(me.total), ql = questList(state);
+  const rank = board(state, 'week').find(r => r.isMe).rank;
+  const ready = allQuests(ql).filter(q => q.ready);
+  const L = state.settings.look, H = state.settings.home;
+  const done = ql.daily.filter(q => q.claimed).length;
+  const pri = q => q.ready ? 0 : q.claimed ? 2 : 1;
+  const today = [...ql.daily].sort((a,b) => pri(a) - pri(b)).slice(0, 3);
+  const h = new Date().getHours(), greet = h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+  const crew = state.groups.find(g => g.id === filter);
+  const feedAll = state.feed.filter(p => (p.who === 'me' || state.friends.some(f => f.id === p.who)) && (!crew || inCrewFeed(crew, p)));
+  const feed = feedAll.slice(0, more ? 12 : 3);
+  const ss = state.session, live = ss && (ss.phase === 'active' || ss.phase === 'lobby');
+  const weekMin = state.wk.mins, goal = state.settings.goalMin;
+  const S = {
+    status:() => html`<div className="card hero stack" style=${{gap:16}}>
+      <div className="hero-top"><div className="lvl"><small>LV</small><b>${lp.l}</b></div><div className="grow"><p className="eyebrow">${titleOf(lp.l)}</p><p className="hero-name ellip">${me.name}</p></div><span className="pill">#${rank}</span></div>
+      <div className="stack" style=${{gap:8}}><div className="between"><span className="xp-num num">${num(me.total)} XP</span><span className="muted" style=${{fontSize:13}}>${lp.toNext} to level ${lp.l + 1}</span></div><div className="xpbar"><i style=${{width:Math.round(lp.pct * 100) + '%'}}></i></div></div>
+      ${L.stats && html`<div className="hero-stats">
+        <div className="hs"><b className="num">${me.weekXP}</b><span>XP this week</span></div>
+        <div className="hs"><b className="num">${liveStreak(me)}</b><span>Day streak</span></div>
+        <div className="hs"><b className="num">${Math.min(100, Math.round(weekMin / goal * 100))}%</b><span>Weekly goal</span></div></div>`}
+    </div>`,
+    start:() => html`<button className="cta violet" onClick=${() => go('hangout')}><${Icon} name="phoneoff" size=${22}/>${live ? 'Back to your session' : 'Start a session'}</button>`,
+    quests:() => html`<${Section} title="Today" right=${html`<button className="link" onClick=${() => go('quests')}>${done}/${ql.daily.length} done</button>`}>
+      ${ready.length > 0 && html`<button className="banner" onClick=${() => go('quests')}><span className="dot"></span><div className="grow"><b>${ready.length} ${ready.length === 1 ? 'quest' : 'quests'} ready</b><p className="muted" style=${{fontSize:13}}>${ready.reduce((a,q) => a + q.xp, 0)} XP to claim</p></div><${Icon} name="chevron" size=${18}/></button>`}
+      <div className="card tight">${today.map(q => html`<${QuestRow} key=${q.key} q=${q} compact=${true}/>`)}</div>
+    <//>`,
+    season:() => html`<${SeasonCard} compact=${true}/>`,
+    feed:() => html`<${Section} title="Feed">
+      <${Composer}/>
+      ${state.groups.length > 0 && html`<div className="scroll-x"><button className="chip" aria-pressed=${filter === 'all'} onClick=${() => setFilter('all')}>Everyone</button>${state.groups.map(g => html`<button key=${g.id} className="chip" aria-pressed=${filter === g.id} onClick=${() => setFilter(g.id)}>${g.name}</button>`)}</div>`}
+      ${feed.length === 0 ? html`<div className="card empty"><p>Quiet in here. Post an update or finish a session.</p></div>` : html`<div className="stack">${feed.map(p => html`<${Post} key=${p.id} p=${p}/>`)}</div>`}
+      ${feedAll.length > 3 && html`<button className="btn btn-ghost" onClick=${() => setMore(!more)}>${more ? 'Show less' : 'Show more'}</button>`}
+    <//>`
+  };
+  return html`<div className="screen">
+    <div className="between"><img className="logo" src=${LOGO} alt="IRL"/><${MeBtn}/></div>
+    <div><p className="eyebrow">${greet}, ${first(me.name)}</p><h1 className="h1-sm">Your life is the <em>game.</em></h1></div>
+    ${H.order.filter(k => !H.hidden[k] && S[k]).map(k => html`<div key=${k}>${S[k]()}</div>`)}
+    <button className="link" style=${{textAlign:'center', padding:8}} onClick=${openCustomize}>Customize this screen</button>
+  </div>`;
+}
+
+/* ============================================================
+   11. Hangout (sessions)
+   ============================================================ */
+function Hangout(){
+  const ss = useApp().state.session;
+  if(ss && ss.phase === 'lobby') return html`<${Lobby}/>`;
+  if(ss && ss.phase === 'active') return html`<${Active}/>`;
+  if(ss && ss.phase === 'done') return html`<${Done}/>`;
+  return html`<${Idle}/>`;
+}
+function Idle(){
+  const {state, createLobby, joinLobby, pre, setPre, toast} = useApp();
+  const friends = state.friends.filter(f => f.status === 'friend');
+  const [mode, setMode] = useState('create');
+  const [mins, setMins] = useState(25);
+  const [sel, setSel] = useState(() => (pre.length ? pre : friends.slice(0,2).map(f => f.id)).filter(id => friends.some(f => f.id === id)));
+  const [code, setCode] = useState('');
+  useEffect(() => { if(pre.length) setPre([]); }, []);
+  const toggle = id => setSel(sel.includes(id) ? sel.filter(x => x !== id) : [...sel, id]);
+  const est = score(mins, sel.length, liveStreak(state.me) + 1).total;
+  const helps = allQuests(questList(state)).filter(q => q.kind === 'auto' && !q.claimed && !q.sweep).slice(0, 3);
+  return html`<div className="screen">
+    <${Head} eyebrow="Hangout" title=${html`Phones down. <em>Together.</em>`} sub="Everyone who stays off their phone until the timer ends earns XP."/>
+    <${Seg} items=${[{k:'create',label:'Create'},{k:'join',label:'Join with code'}]} value=${mode} onChange=${setMode}/>
+    ${mode === 'create' ? html`<div className="stack" style=${{gap:18}}>
+        <div><span className="label">How long</span><div className="chips">${DURATIONS.map(d => html`<button key=${d} className="chip" aria-pressed=${mins === d} onClick=${() => setMins(d)}>${d} min</button>`)}</div></div>
+        <div><span className="label">Invite friends</span><div className="chips">${friends.map(f => html`<button key=${f.id} className="chip" aria-pressed=${sel.includes(f.id)} onClick=${() => toggle(f.id)}>${first(f.name)}</button>`)}</div></div>
+        <div className="card stack" style=${{gap:10}}><div className="between"><span className="muted">XP if everyone stays in</span><span className="xp-num num">~${est}</span></div>
+          ${helps.length > 0 && html`<p className="muted" style=${{fontSize:13}}>Moves your quests: ${helps.map(q => q.title).join(', ')}.</p>`}</div>
+        <button className="cta violet" onClick=${() => createLobby(mins, sel)}>Open lobby</button>
+      </div>` : html`<div className="stack" style=${{gap:14}}>
+        <div><label className="label" htmlFor="join-code">Invite code</label><input id="join-code" className="field" placeholder="IRL-7K2Q" maxLength=${8} autoCapitalize="characters" autoComplete="off" value=${code} onChange=${e => setCode(e.target.value.toUpperCase())}/></div>
+        <button className="cta violet" disabled=${code.trim().length < 4} onClick=${() => friends.length ? joinLobby(code.trim()) : toast('Add a friend first')}>Join session</button>
+        <button className="muted" style=${{fontSize:13}} onClick=${() => setCode('IRL-7K2Q')}>No code handy? Tap to try IRL-7K2Q</button>
+      </div>`}
+  </div>`;
+}
+function Lobby(){
+  const {state, now, startSession, cancelSession, toast} = useApp();
+  const ss = state.session, byId = id => state.friends.find(f => f.id === id), mine = ss.host === 'me';
+  const joined = ss.invited.filter(i => i.joinAt <= now);
+  const copy = () => { try{ navigator.clipboard.writeText(ss.code).then(() => toast('Code copied'), () => toast('Code: ' + ss.code)); }catch(e){ toast('Code: ' + ss.code); } };
+  return html`<div className="screen">
+    <${Head} eyebrow=${mine ? 'Your lobby' : 'Joined ' + first(byId(ss.host).name) + '’s hangout'} title=${ss.mins + ' minutes'} right=${null}/>
+    <div className="card stack" style=${{alignItems:'center', gap:10}}><span className="eyebrow">Invite code</span><div className="code">${ss.code}</div><button className="btn-sm" onClick=${copy}><${Icon} name="copy" size=${15}/> Copy code</button></div>
+    <${Section} title="In the lobby"><div className="card tight">
+      <div className="row"><${Avatar} name=${state.me.name} photo=${state.me.photo} me=${true}/><div className="grow"><b>You</b></div><span className="pill">${mine ? 'Host' : 'Ready'}</span></div>
+      ${ss.invited.filter(i => byId(i.id)).map(i => { const f = byId(i.id), on = i.joinAt <= now; return html`<div key=${i.id} className="row"><${Avatar} name=${f.name}/><div className="grow"><b>${f.name}</b></div><span className=${on ? 'pill' : 'pill plain'}>${on ? (!mine && i.id === ss.host ? 'Host' : 'Ready') : 'Invited'}</span></div>`; })}
+    </div><//>
+    ${mine ? html`<div className="stack"><button className="cta violet" onClick=${startSession}>Start${joined.length ? ' with ' + joined.length + (joined.length === 1 ? ' friend' : ' friends') : ''}</button><button className="cta ghost" onClick=${cancelSession}>Cancel</button></div>`
+      : html`<div className="stack"><p className="muted" style=${{textAlign:'center'}}>Starting in a moment...</p><button className="cta ghost" onClick=${cancelSession}>Leave</button></div>`}
+  </div>`;
+}
+function Active(){
+  const {state, now, endEarly} = useApp();
+  const ss = state.session, [confirm, setConfirm] = useState(false);
+  const el = elapsedOf(ss, now), total = ss.mins * 60, byId = id => state.friends.find(f => f.id === id);
+  return html`<div className="screen">
+    <${Head} eyebrow="Phone-free session" title=${html`Stay <em>off.</em>`} right=${null}/>
+    <${Ring} pct=${el / total}><span className="timer">${fmt(Math.max(0, total - el))}</span><span className="muted" style=${{fontSize:13}}>of ${ss.mins} min${ss.speed > 1 ? ' (demo speed)' : ''}</span><span className="xp" style=${{marginTop:8}}>+${Math.floor(el / 60) * POINTS.perMinute} XP so far</span><//>
+    <${Section} title="Who is still in"><div className="card tight">
+      <div className="row"><${Avatar} name=${state.me.name} photo=${state.me.photo} me=${true}/><div className="grow"><b>You</b></div><span className="pill">In</span></div>
+      ${ss.members.filter(m => byId(m.id)).map(m => { const f = byId(m.id), out = m.dropAt != null && el >= m.dropAt; return html`<div key=${m.id} className="row" style=${{opacity:out ? .45 : 1}}><${Avatar} name=${f.name}/><div className="grow"><b>${f.name}</b></div><span className=${out ? 'pill plain' : 'pill'}>${out ? 'Picked up' : 'In'}</span></div>`; })}
+    </div><//>
+    ${confirm ? html`<div className="stack"><p className="muted" style=${{textAlign:'center'}}>Ending now means no XP for this session.</p><button className="btn btn-danger" onClick=${endEarly}>End session</button><button className="cta ghost" onClick=${() => setConfirm(false)}>Keep going</button></div>`
+      : html`<button className="cta ghost" onClick=${() => setConfirm(true)}>End early</button>`}
+  </div>`;
+}
+function Done(){
+  const {state, commit, go, shareSession} = useApp();
+  const r = state.session.result, moved = r.rankBefore - r.rankAfter;
+  const n = useCountUp(r.total);
+  const ready = readyKeys(state).length;
+  const clear = tab => { commit(s => ({...s, session:null})); if(tab) go(tab); };
+  return html`<div className="screen">
+    <${Head} eyebrow="Session complete" title=${html`${r.mins} minutes. <em>Nice.</em>`} right=${null}/>
+    <div className="card hero stack" style=${{alignItems:'center', gap:6}}><span className="eyebrow">XP earned</span><div className="rw-xp num" style=${{fontSize:84}}>+${n}</div>
+      <p className="muted" style=${{fontSize:14}}>${moved > 0 ? 'Up ' + moved + (moved === 1 ? ' place' : ' places') + ' to #' + r.rankAfter + ' this week' : 'Holding #' + r.rankAfter + ' this week'}</p></div>
+    ${r.level && html`<div className="card hero between" style=${{borderColor:'var(--accent)'}}><div><p className="eyebrow" style=${{color:'var(--accent-hi)'}}>Level up</p><p className="hero-name">${titleOf(r.level)}</p></div><div className="lvl"><small>LV</small><b>${r.level}</b></div></div>`}
+    <div className="card tight">${r.lines.map((l,i) => html`<div key=${i} className="row"><span className="grow">${l.label}</span><span className="pts">+${l.pts}</span></div>`)}</div>
+    ${r.broke.length > 0 && html`<${Section} title="New personal records"><div className="chips">${r.broke.map(b => html`<span key=${b} className="pill"><${Icon} name="star" size=${14}/>${b}</span>`)}</div><//>`}
+    ${r.ach.length > 0 && html`<${Section} title="Unlocked">${r.ach.map(id => { const a = ACH.find(x => x.id === id); return html`<div key=${id} className="pcard"><div className="pi"><${Icon} name=${a.icon} size=${20}/></div><div><b>${a.title}</b><p className="muted" style=${{fontSize:13}}>${a.desc}</p></div></div>`; })}<//>`}
+    <div className="stack">
+      ${ready > 0 && html`<button className="cta violet" onClick=${() => clear('quests')}>${ready} ${ready === 1 ? 'quest' : 'quests'} ready to claim</button>`}
+      ${r.shared ? html`<button className="cta ghost" disabled=${true}>Shared to feed</button>` : html`<button className="cta ghost" onClick=${shareSession}>Share to feed</button>`}
+      <button className="cta ghost" onClick=${() => clear(null)}>Go again</button>
+      <button className="link" style=${{textAlign:'center', padding:8}} onClick=${() => clear('ranks')}>See the leaderboard</button>
+    </div>
+  </div>`;
+}
+
+/* ============================================================
+   12. Ranks
+   ============================================================ */
+function Podium({rows, onPick}){
+  if(rows.length < 3) return null;
+  const hs = {1:104, 2:78, 3:58};
+  return html`<div className="podium">${[rows[1], rows[0], rows[2]].map(r => html`<button key=${r.id} className=${'pod p' + r.rank} onClick=${() => onPick(r)}>
+    <${Avatar} name=${r.name} photo=${r.photo} size=${r.rank === 1 ? 66 : 54} me=${r.isMe}/><b className="pod-n ellip">${r.isMe ? 'You' : first(r.name)}</b><span className="pod-x num">${num(r.xp)}</span>
+    <div className="pod-b" style=${{height:hs[r.rank]}}>${r.rank}</div></button>`)}</div>`;
+}
+function Ranks(){
+  const {state, openFriend, openCrew, go} = useApp();
+  const [who, setWho] = useState('friends'), [metric, setMetric] = useState('week'), [scope, setScope] = useState('all');
+  const grp = state.groups.find(g => g.id === scope);
+  const rows = board(state, metric, grp ? grp.members : null);
+  const league = crewLeague(state, metric);
+  const pick = r => r.isMe ? go('profile') : openFriend(r.id);
+  const lw = state.lastWeek;
+  const tog = html`<div className="tog" role="tablist"><button role="tab" aria-selected=${metric === 'week'} onClick=${() => setMetric('week')}>Week</button><button role="tab" aria-selected=${metric === 'season'} onClick=${() => setMetric('season')}>Season</button></div>`;
+  return html`<div className="screen">
+    <${Head} eyebrow=${metric === 'week' ? 'Resets in ' + untilWeek() : seasonName() + ' · ' + seasonDaysLeft() + ' days left'} title="Ranks" right=${tog}/>
+    <${Seg} items=${[{k:'friends',label:'Friends'},{k:'crews',label:'Crew league'}]} value=${who} onChange=${setWho}/>
+    ${metric === 'season' && html`<${SeasonCard}/>`}
+    ${metric === 'week' && lw && who === 'friends' && html`<div className="card"><p className="eyebrow">Last week</p><p style=${{marginTop:6}}>${lw.winner === 'You' ? 'You won the week with ' + num(lw.winnerXP) + ' XP.' : lw.winner + ' won with ' + num(lw.winnerXP) + ' XP. You finished #' + lw.myRank + ' of ' + lw.size + '.'}</p></div>`}
+    ${who === 'friends' ? html`<div className="sec">
+        ${state.groups.length > 0 && html`<div className="scroll-x"><button className="chip" aria-pressed=${scope === 'all'} onClick=${() => setScope('all')}>All friends</button>${state.groups.map(g => html`<button key=${g.id} className="chip" aria-pressed=${scope === g.id} onClick=${() => setScope(g.id)}>${g.name}</button>`)}</div>`}
+        <${Podium} rows=${rows} onPick=${pick}/>
+        <div className="card tight">${(rows.length > 3 ? rows.slice(3) : rows).map(r => html`<button key=${r.id} className=${'row' + (r.isMe ? ' me' : '')} onClick=${() => pick(r)}>
+          <span className="rank">${r.rank}</span><${Avatar} name=${r.name} photo=${r.photo} me=${r.isMe}/>
+          <div className="grow"><p className="ellip"><b>${r.isMe ? 'You' : r.name}</b></p><p className="muted" style=${{fontSize:12.5}}>Level ${r.level}${r.streak > 1 ? ' · ' + r.streak + ' day streak' : ''}</p></div>
+          <div style=${{textAlign:'right'}}><div className="pts">${num(r.xp)}</div>${metric === 'week' && r.delta !== 0 && html`<div className=${'delta ' + (r.delta > 0 ? 'up' : 'down')}>${r.delta > 0 ? '▲' : '▼'} ${Math.abs(r.delta)}</div>`}</div></button>`)}</div>
+      </div>` : html`<div className="card tight">${league.map(r => { const body = html`<span className="rank">${r.rank}</span><${CrewMark} g=${r} size=${42}/><div className="grow"><p className="ellip"><b>${r.name}</b></p><p className="muted" style=${{fontSize:12.5}}>${r.size} members${r.mine ? ' · your crew' : ''}</p></div><div className="pts">${num(r.xp)}</div>`;
+          return r.mine ? html`<button key=${r.id} className="row me" onClick=${() => openCrew(r.id)}>${body}</button>` : html`<div key=${r.id} className="row">${body}</div>`; })}</div>`}
+  </div>`;
+}
+
+/* ============================================================
+   13. Crews and friends
+   ============================================================ */
+function Crews(){
+  const {state, openCrew, setSheet, addFriend, openFriend, inviteFriend, toast} = useApp();
+  const [mode, setMode] = useState('crews'), [handle, setHandle] = useState('');
+  const league = crewLeague(state, 'week');
+  const known = new Set(state.friends.map(f => f.id)), suggestions = SUGGESTED.filter(p => !known.has(p.id));
+  const submit = () => {
+    const h = handle.trim().replace(/^@/, '').toLowerCase().replace(/[^a-z0-9_.]/g, '');
+    if(!h) return;
+    if(state.friends.some(f => f.handle === h)) { toast('Already friends with @' + h); return; }
+    addFriend(SUGGESTED.find(x => x.handle === h) || {id:'u' + h, name:h.charAt(0).toUpperCase() + h.slice(1), handle:h}); setHandle('');
+  };
+  return html`<div className="screen">
+    <${Head} eyebrow="Social" title="Crews"/>
+    <${Seg} items=${[{k:'crews',label:'Crews'},{k:'friends',label:'Friends'}]} value=${mode} onChange=${setMode}/>
+    ${mode === 'crews' ? html`<div className="sec">
+        ${state.groups.length === 0 && html`<div className="card empty"><p>A crew is your regular group. It gets its own board, feed and quests.</p></div>`}
+        ${state.groups.map(g => { const r = league.find(x => x.id === g.id), mem = g.members.map(id => state.friends.find(f => f.id === id)).filter(Boolean);
+          return html`<button key=${g.id} className="card stack" style=${{gap:14}} onClick=${() => openCrew(g.id)}>
+            <div className="between"><${CrewMark} g=${g} size=${56}/><div className="grow"><p className="hero-name ellip" style=${{fontSize:26}}>${g.name}</p><p className="muted" style=${{fontSize:13}}>${mem.length + 1} members · League #${r.rank}</p></div><${Icon} name="chevron" size=${18}/></div>
+            <div className="between"><div className="avatars"><${Avatar} name=${state.me.name} photo=${state.me.photo} size=${32} me=${true}/>${mem.slice(0,4).map(m => html`<${Avatar} key=${m.id} name=${m.name} size=${32}/>`)}</div><span className="xp-num num">${num(r.xp)} <small style=${{fontSize:14, color:'var(--muted)'}}>XP this week</small></span></div></button>`; })}
+        <button className="cta violet" onClick=${() => setSheet({type:'crew'})}><${Icon} name="plus" size=${20}/>Create a crew</button>
+      </div>` : html`<div className="sec">
+        <div><label className="label" htmlFor="add-handle">Add a friend by username</label>
+          <div className="composer"><input id="add-handle" className="field" placeholder="@username" autoCapitalize="none" autoComplete="off" value=${handle} onChange=${e => setHandle(e.target.value)} onKeyDown=${e => e.key === 'Enter' && submit()}/><button className="btn-sm solid" style=${{height:52, borderRadius:16, padding:'0 20px'}} onClick=${submit}>Add</button></div></div>
+        ${suggestions.length > 0 && html`<${Section} title="People you may know"><div className="card tight">${suggestions.map(p => html`<div key=${p.id} className="row"><${Avatar} name=${p.name}/><div className="grow"><b>${p.name}</b><p className="muted" style=${{fontSize:12.5}}>@${p.handle}</p></div><button className="btn-sm" onClick=${() => addFriend(p)}>Add</button></div>`)}</div><//>`}
+        <${Section} title=${'Friends (' + state.friends.filter(f => f.status === 'friend').length + ')'}><div className="card tight">${state.friends.map(f => html`<div key=${f.id} className="row">
+          <button className="between grow" style=${{justifyContent:'flex-start'}} onClick=${() => f.status === 'friend' && openFriend(f.id)}><${Avatar} name=${f.name}/><div className="grow"><b className="ellip" style=${{display:'block'}}>${f.name}</b><p className="muted ellip" style=${{fontSize:12.5}}>${f.status === 'pending' ? 'Invite sent' : 'Level ' + lvlOf(f.total) + ' · active ' + ago(f.lastTs).toLowerCase()}</p></div></button>
+          ${f.status === 'pending' ? html`<span className="pill plain">Pending</span>` : html`<button className="btn-sm" onClick=${() => inviteFriend(f.id)}>Invite</button>`}</div>`)}</div><//>
+      </div>`}
+  </div>`;
+}
+const SUGGESTED = [{id:'theo',name:'Theo Alvarez',handle:'theoa'},{id:'zoe',name:'Zoe Park',handle:'zoep'},{id:'eli',name:'Eli Brooks',handle:'elib'},{id:'nina',name:'Nina Rossi',handle:'ninar'}];
+
+function CrewPage({id}){
+  const {state, setNav, setSheet, setPre, go, toast} = useApp();
+  const [tab, setTab] = useState('feed'), [metric, setMetric] = useState('week');
+  const g = state.groups.find(x => x.id === id);
+  if(!g) return html`<div className="screen"><div className="card empty"><p>This crew no longer exists.</p><button className="cta violet sm" onClick=${() => setNav({tab:'crews', crew:null})}>Back</button></div></div>`;
+  const members = g.members.map(m => state.friends.find(f => f.id === m)).filter(Boolean);
+  const league = crewLeague(state, 'week'), r = league.find(x => x.id === id);
+  const rows = board(state, metric, g.members);
+  const ql = questList(state).crews.find(c => c.g.id === id);
+  const feed = state.feed.filter(p => inCrewFeed(g, p));
+  const start = () => { if(state.session){ toast('Finish your current session first'); go('hangout'); return; } setPre(members.map(m => m.id)); go('hangout'); };
+  const ready = ql ? ql.quests.filter(q => q.ready).length : 0;
+  return html`<div className="screen">
+    <div className="between"><button className="iconbtn" aria-label="Back" onClick=${() => setNav({tab:'crews', crew:null})}><${Icon} name="back" size=${20}/></button>
+      <button className="btn-sm" onClick=${() => setSheet({type:'crew', id})}><${Icon} name="settings" size=${15}/> Edit crew</button></div>
+    <div className="stack" style=${{alignItems:'center', gap:8, textAlign:'center'}}><${CrewMark} g=${g} size=${88}/><h1 style=${{fontSize:40}}>${g.name}</h1><p className="muted">${members.length + 1} members · Crew League #${r.rank}</p></div>
+    <div className="stats"><div className="stat"><div className="v num">${num(r.xp)}</div><div className="k">XP this week</div></div><div className="stat"><div className="v num">${num(crewXP(state, g, 'season'))}</div><div className="k">Season XP</div></div><div className="stat"><div className="v num">#${r.rank}</div><div className="k">In the league</div></div></div>
+    <button className="cta violet" onClick=${start}><${Icon} name="phoneoff" size=${22}/>Start a crew hangout</button>
+    <${Seg} items=${[{k:'feed',label:'Feed'},{k:'board',label:'Board'},{k:'quests',label:'Quests',n:ready},{k:'members',label:'Members'}]} value=${tab} onChange=${setTab}/>
+    ${tab === 'feed' && html`<div className="sec"><${Composer} groupId=${id}/>${feed.length === 0 ? html`<div className="card empty"><p>No crew activity yet.</p></div>` : html`<div className="stack">${feed.slice(0,20).map(p => html`<${Post} key=${p.id} p=${p}/>`)}</div>`}</div>`}
+    ${tab === 'board' && html`<div className="sec"><${Seg} items=${[{k:'week',label:'This week'},{k:'season',label:'Season'}]} value=${metric} onChange=${setMetric}/>
+      <div className="card tight">${rows.map(x => html`<div key=${x.id} className=${'row' + (x.isMe ? ' me' : '')}><span className="rank">${x.rank}</span><${Avatar} name=${x.name} photo=${x.photo} me=${x.isMe}/><div className="grow"><p className="ellip"><b>${x.isMe ? 'You' : x.name}</b></p><p className="muted" style=${{fontSize:12.5}}>Level ${x.level}</p></div><div className="pts">${num(x.xp)}</div></div>`)}</div></div>`}
+    ${tab === 'quests' && ql && html`<div className="card tight">${ql.quests.map(q => html`<${QuestRow} key=${q.key} q=${q}/>`)}</div>`}
+    ${tab === 'members' && html`<div className="card tight">
+      <div className="row"><${Avatar} name=${state.me.name} photo=${state.me.photo} me=${true}/><div className="grow"><b>You</b><p className="muted" style=${{fontSize:12.5}}>Level ${lvlOf(state.me.total)} · ${titleOf(lvlOf(state.me.total))}</p></div></div>
+      ${members.map(m => html`<div key=${m.id} className="row"><${Avatar} name=${m.name}/><div className="grow"><b>${m.name}</b><p className="muted" style=${{fontSize:12.5}}>Level ${lvlOf(m.total)} · active ${ago(m.lastTs).toLowerCase()}</p></div></div>`)}</div>`}
+  </div>`;
+}
+
+function CrewSheet({id}){
+  const {state, commit, setSheet, setNav, toast} = useApp();
+  const g = id ? state.groups.find(x => x.id === id) : null;
+  const friends = state.friends.filter(f => f.status === 'friend');
+  const [name, setName] = useState(g ? g.name : ''), [emblem, setEmblem] = useState(g ? g.emblem : 'bolt'), [tone, setTone] = useState(g ? g.tone : 'violet');
+  const [photo, setPhoto] = useState(g ? g.photo : null), [sel, setSel] = useState(g ? g.members : []), [confirm, setConfirm] = useState(false);
+  const toggle = m => setSel(sel.includes(m) ? sel.filter(x => x !== m) : [...sel, m]);
+  const save = () => {
+    const data = {name:name.trim(), emblem, tone, photo, members:sel};
+    if(g) commit(s => ({...s, groups:s.groups.map(x => x.id === id ? {...x, ...data} : x)}));
+    else commit(s => ({...s, groups:[...s.groups, {id:uid(), ...data}]}));
+    setSheet(null); toast(g ? 'Crew saved' : 'Crew created');
+  };
+  const del = () => { commit(s => ({...s, groups:s.groups.filter(x => x.id !== id)})); setSheet(null); setNav({tab:'crews', crew:null}); toast('Crew deleted'); };
+  const preview = {emblem, tone, photo};
+  return html`<${Sheet} onClose=${() => setSheet(null)}>
+    <h2 style=${{marginBottom:16, fontSize:28}}>${g ? 'Edit crew' : 'New crew'}</h2>
+    <div className="between" style=${{justifyContent:'flex-start', gap:16, marginBottom:18}}><${CrewMark} g=${preview} size=${72}/><div className="stack" style=${{gap:8, alignItems:'flex-start'}}><${PhotoBtn} onPick=${setPhoto}/>${photo && html`<button className="btn-sm" onClick=${() => setPhoto(null)}>Remove photo</button>`}</div></div>
+    <label className="label" htmlFor="crew-name">Crew name</label>
+    <input id="crew-name" className="field" placeholder="Sunday Brunch" maxLength=${22} value=${name} onChange=${e => setName(e.target.value)}/>
+    <span className="label" style=${{marginTop:18}}>Emblem</span>
+    <div className="emblems">${EMBLEMS.map(e => html`<button key=${e} aria-label=${e} aria-pressed=${emblem === e} onClick=${() => setEmblem(e)}><${Icon} name=${e} size=${22}/></button>`)}</div>
+    <span className="label" style=${{marginTop:18}}>Color</span>
+    <div className="chips">${Object.keys(TONES).map(t => html`<button key=${t} className="chip" aria-pressed=${tone === t} onClick=${() => setTone(t)}><span style=${{width:14, height:14, borderRadius:4, background:TONES[t].bg, border:'1px solid var(--line)'}}></span>${t}</button>`)}</div>
+    <span className="label" style=${{marginTop:18}}>Members</span>
+    <div className="chips" style=${{marginBottom:22}}>${friends.map(f => html`<button key=${f.id} className="chip" aria-pressed=${sel.includes(f.id)} onClick=${() => toggle(f.id)}>${first(f.name)}</button>`)}</div>
+    <div className="stack"><button className="cta violet" disabled=${!name.trim()} onClick=${save}>${g ? 'Save crew' : 'Create crew'}</button>
+      ${g && (confirm ? html`<button className="btn btn-danger" onClick=${del}>Confirm delete</button>` : html`<button className="btn btn-ghost" onClick=${() => setConfirm(true)}>Delete crew</button>`)}</div>
+  <//>`;
+}
+
+function FriendSheet({id}){
+  const {state, commit, setSheet, inviteFriend, toast} = useApp();
+  const f = state.friends.find(x => x.id === id), [confirm, setConfirm] = useState(false);
+  if(!f) return null;
+  const l = lvlOf(f.total), crews = state.groups.filter(g => g.members.includes(id)), rk = board(state, 'week').find(r => r.id === id);
+  const remove = () => { commit(s => ({...s, friends:s.friends.filter(x => x.id !== id), groups:s.groups.map(g => ({...g, members:g.members.filter(m => m !== id)}))})); setSheet(null); toast(first(f.name) + ' removed'); };
+  return html`<${Sheet} onClose=${() => setSheet(null)}>
+    <div className="stack" style=${{alignItems:'center', gap:6, marginBottom:18}}><${Avatar} name=${f.name} size=${76}/><h2 style=${{marginTop:6, fontSize:30}}>${f.name}</h2>
+      <p className="muted">@${f.handle} · Level ${l} ${titleOf(l)}</p>${crews.length > 0 && html`<div className="chips" style=${{justifyContent:'center'}}>${crews.map(g => html`<span key=${g.id} className="tag">${g.name}</span>`)}</div>`}</div>
+    <div className="stats" style=${{marginBottom:12}}><div className="stat"><div className="v num">${num(f.week)}</div><div className="k">XP this week</div></div><div className="stat"><div className="v num">${f.sessions}</div><div className="k">Sessions</div></div><div className="stat"><div className="v num">${f.streak}</div><div className="k">Day streak</div></div></div>
+    <p className="muted" style=${{textAlign:'center', marginBottom:18}}>${num(f.total)} total XP · ${num(f.season)} season XP · #${rk ? rk.rank : '-'} this week</p>
+    <div className="stack"><button className="cta violet" onClick=${() => inviteFriend(f.id)}>Invite to a hangout</button>
+      ${confirm ? html`<button className="btn btn-danger" onClick=${remove}>Confirm remove</button>` : html`<button className="btn btn-ghost" onClick=${() => setConfirm(true)}>Remove friend</button>`}</div>
+  <//>`;
+}
+
+/* ============================================================
+   14. Profile and settings
+   ============================================================ */
+function WeekBars({week}){
+  const max = Math.max(60, ...week), t = new Date();
+  return html`<div className="bars">${week.map((m,i) => { const d = new Date(t.getTime() - (6 - i) * DAY); return html`<div key=${i} className=${i === 6 ? 'today' : ''}><i style=${{height:Math.max(4, m / max * 76) + 'px'}}></i><span>${'SMTWTFS'[d.getDay()]}</span></div>`; })}</div>`;
+}
+function Profile(){
+  const {state, setNav} = useApp();
+  const [allA, setAllA] = useState(false), [allH, setAllH] = useState(false);
+  const me = state.me, lp = lvlProg(me.total), weekMin = me.week.reduce((a,b) => a + b, 0);
+  const pr = me.pr, isNew = k => Date.now() - pr[k].ts < DAY;
+  const PRS = [{k:'longest',label:'Longest session',u:'min'},{k:'dayMin',label:'Best day',u:'min'},{k:'weekXP',label:'Best week',u:'XP'},{k:'streak',label:'Longest streak',u:'days'}];
+  const ring = 2 * Math.PI * 54;
+  const achs = [...ACH].sort((a,b) => (me.unlocked[b.id] ? 1 : 0) - (me.unlocked[a.id] ? 1 : 0));
+  return html`<div className="screen">
+    <div className="between"><button className="iconbtn" aria-label="Back" onClick=${() => setNav({tab:'home', crew:null})}><${Icon} name="back" size=${20}/></button><button className="iconbtn" aria-label="Settings" onClick=${() => setNav({tab:'settings', crew:null})}><${Icon} name="settings" size=${20}/></button></div>
+    <div className="stack" style=${{alignItems:'center', gap:6}}>
+      <div style=${{position:'relative', width:128, height:128}}>
+        <svg width="128" height="128" viewBox="0 0 128 128" style=${{position:'absolute', inset:0}}><circle cx="64" cy="64" r="54" fill="none" stroke="var(--surface-3)" strokeWidth="5"/><circle cx="64" cy="64" r="54" fill="none" stroke="var(--accent)" strokeWidth="5" strokeLinecap="round" strokeDasharray=${ring} strokeDashoffset=${ring * (1 - lp.pct)} transform="rotate(-90 64 64)"/></svg>
+        <div style=${{position:'absolute', inset:14}}><${Avatar} name=${me.name} photo=${me.photo} size=${100} me=${true}/></div>
+        <div className="lvl" style=${{position:'absolute', right:-8, bottom:-4, width:46, height:50}}><small style=${{fontSize:10}}>LV</small><b style=${{fontSize:26}}>${lp.l}</b></div>
+      </div>
+      <h1 style=${{fontSize:34, marginTop:10}}>${me.name}</h1>
+      <p className="muted">@${me.handle} · ${titleOf(lp.l)}</p>
+      <span className="pill"><${Icon} name="star" size=${14}/>${num(me.total)} XP · ${lp.toNext} to level ${lp.l + 1}</span>
+    </div>
+    <div className="stats"><div className="stat"><div className="v num">${me.weekXP}</div><div className="k">XP this week</div></div><div className="stat"><div className="v num">${me.sessions}</div><div className="k">Sessions</div></div><div className="stat"><div className="v num">${liveStreak(me)}</div><div className="k">Day streak</div></div></div>
+    <${Section} title="Personal records"><div className="prs">${PRS.map(p => html`<div key=${p.k} className="pr">${isNew(p.k) && html`<span className="new">NEW</span>`}<div className="v num">${num(pr[p.k].v)}<small>${p.u}</small></div><div className="k">${p.label}</div></div>`)}</div><//>
+    <${Section} title="Achievements" right=${html`<button className="link" onClick=${() => setAllA(!allA)}>${allA ? 'Show less' : Object.keys(me.unlocked).length + '/' + ACH.length + ' · show all'}</button>`}><div className="ach">${achs.slice(0, allA ? achs.length : 6).map(a => { const on = !!me.unlocked[a.id]; return html`<div key=${a.id} className=${on ? '' : 'off'}><div className="ic"><${Icon} name=${a.icon} size=${21}/></div><b>${a.title}</b><small>${a.desc}</small></div>`; })}</div><//>
+    <${Section} title="This week" right=${html`<span className="muted num" style=${{fontSize:13}}>${weekMin} min</span>`}><div className="card"><${WeekBars} week=${me.week}/></div><//>
+    <${Section} title="Activity" right=${state.history.length > 3 && html`<button className="link" onClick=${() => setAllH(!allH)}>${allH ? 'Show less' : 'Show more'}</button>`}><div className="card tight">${state.history.slice(0, allH ? 10 : 3).map(h => html`<div key=${h.id} className="row"><div className="grow"><b>${h.title}</b><p className="muted" style=${{fontSize:12.5}}>${h.mins} min · ${ago(h.ts)}</p></div><span className="pts" style=${{color:h.pts > 0 ? 'var(--fg)' : 'var(--muted)'}}>${h.pts > 0 ? '+' + h.pts : '0'}</span></div>`)}</div><//>
+  </div>`;
+}
+
+function SRow({label, children}){ return html`<div className="row"><span className="grow">${label}</span>${children}</div>`; }
+function MenuRow({title, sub, right, onClick}){
+  return html`<button className="row" onClick=${onClick}><div className="grow"><p style=${{fontWeight:600}}>${title}</p><p className="muted ellip" style=${{fontSize:13}}>${sub}</p></div>${right}<${Icon} name="chevron" size=${18}/></button>`;
+}
+
+/* ---- Customize ---- */
+const ACCENTS = [['#8B6CFF','Violet'],['#4C8DFF','Blue'],['#FF6B5E','Coral'],['#2FD6A0','Mint'],['#FFB020','Amber'],['#FF4FA3','Pink']];
+const LOOKS = [
+  {k:'midnight', name:'Midnight', look:{theme:'dark', accent:'#8B6CFF', type:'sport', corners:'soft'}},
+  {k:'daylight', name:'Daylight', look:{theme:'light', accent:'#4C8DFF', type:'clean', corners:'round'}},
+  {k:'ember', name:'Ember', look:{theme:'dark', accent:'#FF6B5E', type:'sport', corners:'sharp'}},
+  {k:'mint', name:'Mint', look:{theme:'light', accent:'#14B88A', type:'clean', corners:'soft'}},
+  {k:'noir', name:'Noir', look:{theme:'dark', accent:'#F5F5F7', type:'clean', corners:'soft'}}
+];
+const HOME_LABELS = {status:'Level card', start:'Start button', quests:'Today’s quests', season:'Season progress', feed:'Feed'};
+const TAB_LABELS = {home:'Home', quests:'Quests', ranks:'Ranks', crews:'Crews'};
+const moveKey = (arr, k, d) => { const i = arr.indexOf(k), j = i + d; if(i < 0 || j < 0 || j >= arr.length) return arr; const a = [...arr]; [a[i], a[j]] = [a[j], a[i]]; return a; };
+const CORNER_PX = {sharp:[4,3], soft:[16,12], round:[24,18]};
+
+function Order({keys, labels, hidden, fixed, onMove, onToggle}){
+  return html`<div className="card tight">${keys.map((k,i) => html`<div key=${k} className="lay">
+    <span className="grow" style=${{opacity:hidden[k] ? .5 : 1}}>${labels[k]}</span>
+    <button className="mv up" aria-label=${'Move ' + labels[k] + ' up'} disabled=${i === 0} onClick=${() => onMove(k, -1)}><${Icon} name="chevron" size=${16}/></button>
+    <button className="mv dn" aria-label=${'Move ' + labels[k] + ' down'} disabled=${i === keys.length - 1} onClick=${() => onMove(k, 1)}><${Icon} name="chevron" size=${16}/></button>
+    ${fixed && fixed[k] ? html`<span className="muted" style=${{fontSize:12.5, width:50, textAlign:'center'}}>Always</span>` : html`<${Toggle} on=${!hidden[k]} label=${'Show ' + labels[k]} onChange=${v => onToggle(k, v)}/>`}
+  </div>`)}</div>`;
+}
+
+function Customize(){
+  const {state, commit} = useApp();
+  const st = state.settings, L = st.look;
+  const setL = p => commit(s => ({...s, settings:{...s.settings, look:{...s.settings.look, ...p}}}));
+  const setG = (name, p) => commit(s => ({...s, settings:{...s.settings, [name]:{...s.settings[name], ...p}}}));
+  const cur = LOOKS.find(p => Object.entries(p.look).every(([k,v]) => L[k] === v));
+  const isCustom = !ACCENTS.some(a => a[0].toLowerCase() === L.accent.toLowerCase());
+  const reset = () => commit(s => ({...s, settings:{...s.settings, look:{...DEF_LOOK}, home:{order:[...DEF_HOME.order], hidden:{...DEF_HOME.hidden}}, tabs:{order:[...TAB_KEYS], hidden:{}}}}));
+  return html`<div className="pg">
+    <div className="card hero stack" style=${{gap:14}}>
+      <div className="hero-top"><div className="lvl"><small>LV</small><b>5</b></div><div className="grow"><p className="eyebrow">Preview</p><p className="hero-name">Contender</p></div><span className="xp">+40 XP</span></div>
+      <div className="xpbar"><i style=${{width:'62%'}}></i></div>
+      <div className="between"><button className="cta violet sm">Primary</button><span className="pill">Chip</span><span className="btn-sm">Button</span></div>
+    </div>
+    <${Section} title="Looks"><div className="looks">${LOOKS.map(p => { const dark = p.look.theme === 'dark', r = CORNER_PX[p.look.corners];
+      return html`<button key=${p.k} className="look" aria-pressed=${!!cur && cur.k === p.k} onClick=${() => setL(p.look)}>
+        <div className="look-pv" style=${{background:dark ? '#09090B' : '#F5F5F7'}}><i style=${{background:dark ? '#1B1B20' : '#fff', borderRadius:r[1] / 2 + 2}}></i><b style=${{background:p.look.accent, borderRadius:r[1]}}></b></div><span>${p.name}</span></button>`; })}</div><//>
+    <${Section} title="Color">
+      <div><span className="label">Theme</span><${Seg} items=${[{k:'dark',label:'Dark'},{k:'light',label:'Light'},{k:'auto',label:'Auto'}]} value=${L.theme} onChange=${v => setL({theme:v})}/></div>
+      <div><span className="label">Accent</span><div className="swatches">${ACCENTS.map(([hex,name]) => { const on = L.accent.toLowerCase() === hex.toLowerCase();
+        return html`<button key=${hex} className="sw" aria-label=${name} aria-pressed=${on} style=${{background:hex, color:onColor(hex)}} onClick=${() => setL({accent:hex})}>${on && html`<${Icon} name="check" size=${18}/>`}</button>`; })}
+        <label className=${'sw custom' + (isCustom ? ' on' : '')} aria-label="Custom color"><input type="color" value=${L.accent} onChange=${e => setL({accent:e.target.value})}/></label></div></div>
+    <//>
+    <${Section} title="Style">
+      <div><span className="label">Spacing</span><${Seg} items=${[{k:'roomy',label:'Roomy'},{k:'standard',label:'Standard'},{k:'compact',label:'Compact'}]} value=${L.density} onChange=${v => setL({density:v})}/></div>
+      <div><span className="label">Corners</span><${Seg} items=${[{k:'sharp',label:'Sharp'},{k:'soft',label:'Soft'},{k:'round',label:'Round'}]} value=${L.corners} onChange=${v => setL({corners:v})}/></div>
+      <div><span className="label">Type</span><${Seg} items=${[{k:'sport',label:'Sport'},{k:'clean',label:'Clean'}]} value=${L.type} onChange=${v => setL({type:v})}/></div>
+    <//>
+    <${Section} title="Home screen">
+      <${Order} keys=${st.home.order} labels=${HOME_LABELS} hidden=${st.home.hidden} onMove=${(k,d) => setG('home', {order:moveKey(st.home.order, k, d)})} onToggle=${(k,v) => setG('home', {hidden:{...st.home.hidden, [k]:!v}})}/>
+      <div className="card tight"><${SRow} label="Weekly stats on the level card"><${Toggle} on=${L.stats} label="Weekly stats" onChange=${v => setL({stats:v})}/><//></div>
+    <//>
+    <${Section} title="Tab bar">
+      <${Order} keys=${st.tabs.order} labels=${TAB_LABELS} hidden=${st.tabs.hidden} fixed=${{home:true}} onMove=${(k,d) => setG('tabs', {order:moveKey(st.tabs.order, k, d)})} onToggle=${(k,v) => setG('tabs', {hidden:{...st.tabs.hidden, [k]:!v}})}/>
+      <div className="card tight"><${SRow} label="Show tab labels"><${Toggle} on=${L.labels} label="Tab labels" onChange=${v => setL({labels:v})}/><//>
+        <${SRow} label="Animations"><${Toggle} on=${L.motion} label="Animations" onChange=${v => setL({motion:v})}/><//></div>
+    <//>
+    <button className="btn btn-ghost" onClick=${reset}>Reset customization</button>
+  </div>`;
+}
+
+function Settings(){
+  const {state, commit, nav, setNav, resetAll, replayIntro} = useApp();
+  const page = nav.page || null, st = state.settings, [confirm, setConfirm] = useState(false);
+  const open = p => setNav({tab:'settings', crew:null, page:p});
+  const back = () => page ? open(null) : setNav({tab:'profile', crew:null});
+  const setTop = (k, v) => commit(s => ({...s, settings:{...s.settings, [k]:v}}));
+  const setN = (k, v) => commit(s => ({...s, settings:{...s.settings, notif:{...s.settings.notif, [k]:v}}}));
+  const titles = {customize:'Customize', account:'Account', alerts:'Alerts and sharing', game:'Game', data:'Data'};
+  let body;
+  if(page === 'customize') body = html`<${Customize}/>`;
+  else if(page === 'account') body = html`<div className="pg">
+      <div className="between" style=${{justifyContent:'flex-start', gap:16}}><${Avatar} name=${state.me.name} photo=${state.me.photo} size=${64} me=${true}/><div className="stack" style=${{gap:8, alignItems:'flex-start'}}><${PhotoBtn} onPick=${p => commit(s => ({...s, me:{...s.me, photo:p}}))}/>${state.me.photo && html`<button className="btn-sm" onClick=${() => commit(s => ({...s, me:{...s.me, photo:null}}))}>Remove photo</button>`}</div></div>
+      <div><label className="label" htmlFor="set-name">Display name</label><input id="set-name" className="field" maxLength=${28} value=${state.me.name} onChange=${e => commit(s => ({...s, me:{...s.me, name:e.target.value}}))}/></div>
+      <div><label className="label" htmlFor="set-handle">Username</label><input id="set-handle" className="field" maxLength=${20} autoCapitalize="none" value=${state.me.handle} onChange=${e => commit(s => ({...s, me:{...s.me, handle:e.target.value.toLowerCase().replace(/[^a-z0-9_.]/g, '')}}))}/></div></div>`;
+  else if(page === 'alerts') body = html`<div className="pg"><div className="card tight">
+      <${SRow} label="Tell me when friends react"><${Toggle} on=${st.notif.react} label="Reaction alerts" onChange=${v => setN('react', v)}/><//>
+      <${SRow} label="Tell me when a quest is ready"><${Toggle} on=${st.notif.quests} label="Quest alerts" onChange=${v => setN('quests', v)}/><//>
+      <${SRow} label="Post sessions, quests and levels to my feed"><${Toggle} on=${st.autoShare} label="Auto share" onChange=${v => setTop('autoShare', v)}/><//></div></div>`;
+  else if(page === 'game') body = html`<div className="pg">
+      <div><span className="label">Weekly phone-free goal</span><div className="chips">${[[180,'3 h'],[240,'4 h'],[360,'6 h']].map(([m,l]) => html`<button key=${m} className="chip" aria-pressed=${st.goalMin === m} onClick=${() => setTop('goalMin', m)}>${l}</button>`)}</div></div>
+      <div><span className="label">Prototype session speed</span><${Seg} items=${[{k:'60',label:'Demo (1 min = 1 sec)'},{k:'1',label:'Real time'}]} value=${String(st.speed)} onChange=${v => setTop('speed', Number(v))}/></div></div>`;
+  else if(page === 'data') body = html`<div className="pg"><button className="btn btn-ghost" onClick=${replayIntro}>Replay intro</button>
+      ${confirm ? html`<button className="btn btn-danger" onClick=${() => { resetAll(); setConfirm(false); }}>Confirm reset</button>` : html`<button className="btn btn-ghost" onClick=${() => setConfirm(true)}>Reset prototype data</button>`}
+      <p className="muted" style=${{textAlign:'center', fontSize:12.5}}>IRL prototype 0.3 · data is saved on this device only</p></div>`;
+  else body = html`<div className="card tight">
+      <${MenuRow} title="Customize" sub="Looks, colors, layout and tabs" right=${html`<span className="swdot"></span>`} onClick=${() => open('customize')}/>
+      <${MenuRow} title="Account" sub=${state.me.name + ' · @' + state.me.handle} onClick=${() => open('account')}/>
+      <${MenuRow} title="Alerts and sharing" sub="Reactions, quests, feed posts" onClick=${() => open('alerts')}/>
+      <${MenuRow} title="Game" sub="Weekly goal and session speed" onClick=${() => open('game')}/>
+      <${MenuRow} title="Data" sub="Replay intro, reset" onClick=${() => open('data')}/></div>`;
+  return html`<div className="screen">
+    <div className="between"><button className="iconbtn" aria-label="Back" onClick=${back}><${Icon} name="back" size=${20}/></button><span className="eyebrow">${page ? 'Settings' : ''}</span><span style=${{width:40}}></span></div>
+    <h1>${page ? titles[page] : 'Settings'}</h1>
+    ${body}
+  </div>`;
+}
+
+/* ============================================================
+   15. Intro
+   ============================================================ */
+function Onboarding({onDone}){
+  const {state} = useApp();
+  const [step, setStep] = useState(0), [name, setName] = useState(state.me.name), [handle, setHandle] = useState(state.me.handle);
+  const last = 4;
+  const fake = [{id:'a',name:'Maya Chen',xp:380,rank:1,isMe:false},{id:'b',name:'You',xp:342,rank:2,isMe:true},{id:'c',name:'Sam Okafor',xp:298,rank:3,isMe:false}];
+  const body = [
+    html`<div className="onb-body" key="0"><img className="onb-logo" src=${LOGO} alt="IRL"/><div><h1>Your life is the <em>game.</em></h1><p className="sub" style=${{fontSize:17}}>Compete with your friends for everything that happens away from your phone.</p></div></div>`,
+    html`<div className="onb-body" key="1"><div className="vis"><${Ring} pct=${.72}><span className="timer" style=${{fontSize:58}}>08:24</span><span className="muted" style=${{fontSize:13}}>of 25 min</span><//><div className="avatars"><${Avatar} name="You" size=${40} me=${true}/><${Avatar} name="Maya Chen" size=${40}/><${Avatar} name="Sam Okafor" size=${40}/></div></div>
+      <div><h1>Phones down. <em>Friends up.</em></h1><p className="sub">Start a session together. Everyone who stays off their phone earns XP.</p></div></div>`,
+    html`<div className="onb-body" key="2"><div className="card tight" style=${{width:'100%'}}>
+        <div className="mini-q"><${MiniRing} pct=${1} done=${true} size=${38}><${Icon} name="check" size=${15}/><//><p className="grow" style=${{fontWeight:600, fontSize:14.5}}>Take a 15 minute walk</p><span className="xp dim">+30</span></div>
+        <div className="mini-q"><${MiniRing} pct=${.66} size=${38}><span style=${{fontSize:12}}>2/3</span><//><p className="grow" style=${{fontWeight:600, fontSize:14.5}}>Meet up in person 3 times</p><span className="xp">+150</span></div>
+        <div className="mini-q"><${MiniRing} pct=${.3} size=${38}><${Icon} name="phoneoff" size=${14}/><//><p className="grow" style=${{fontWeight:600, fontSize:14.5}}>30 phone-free minutes</p><span className="xp">+50</span></div></div>
+      <div><h1>Quests in <em>real life.</em></h1><p className="sub">Daily, weekly and crew quests. Check in, earn XP, level up.</p></div></div>`,
+    html`<div className="onb-body" key="3"><div style=${{width:'100%'}}><${Podium} rows=${fake} onPick=${() => {}}/></div>
+      <div><h1>Crews. Seasons. <em>Glory.</em></h1><p className="sub">Climb the weekly board, win the monthly season and put your crew on top of the league.</p></div></div>`,
+    html`<div className="onb-body" key="4"><div><p className="eyebrow">Last step</p><h1>Pick your <em>name.</em></h1></div>
+      <div className="stack"><div><label className="label" htmlFor="ob-name">Display name</label><input id="ob-name" className="field" maxLength=${28} value=${name} onChange=${e => setName(e.target.value)}/></div>
+        <div><label className="label" htmlFor="ob-handle">Username</label><input id="ob-handle" className="field" maxLength=${20} autoCapitalize="none" value=${handle} onChange=${e => setHandle(e.target.value.toLowerCase().replace(/[^a-z0-9_.]/g, ''))}/></div></div></div>`
+  ][step];
+  return html`<div className="onb"><div className="onb-in">
+    <div className="onb-top"><div className="dots">${[0,1,2,3,4].map(i => html`<i key=${i} className=${i <= step ? 'on' : ''}></i>`)}</div>${step < last && html`<button className="link" onClick=${() => setStep(last)}>Skip</button>`}</div>
+    ${body}
+    <button className="cta violet" disabled=${step === last && (!name.trim() || !handle.trim())} onClick=${() => step < last ? setStep(step + 1) : onDone(name.trim(), handle.trim())}>${step === 0 ? 'Get started' : step < last ? 'Next' : 'Enter IRL'}</button>
+  </div></div>`;
+}
+
+/* ============================================================
+   16. App shell
+   ============================================================ */
+function App(){
+  const [state, setRaw] = useState(() => { const s = load(); applyLook(s.settings.look); return s; });
+  const stRef = useRef(state);
+  const commit = useCallback(fn => { const next = normalize(fn(normalize(stRef.current))); stRef.current = next; setRaw(next); return next; }, []);
+  const [nav, setNav] = useState({tab:'home', crew:null});
+  const [sheet, setSheet] = useState(null);
+  const [reward, setReward] = useState(null);
+  const [pre, setPre] = useState([]);
+  const [now, setNow] = useState(Date.now());
+  const [msg, setMsg] = useState(null);
+  const msgT = useRef(null), outRef = useRef(0);
+
+  useEffect(() => { applyLook(state.settings.look); if(state.settings.look.theme !== 'auto') return; let mq; try{ mq = matchMedia('(prefers-color-scheme: light)'); }catch(e){ return; } const f = () => applyLook(stRef.current.settings.look); mq.addEventListener('change', f); return () => mq.removeEventListener('change', f); }, [state.settings.look]);
+  useEffect(() => { try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }, [state]);
+  const toast = useCallback(m => { setMsg(m); clearTimeout(msgT.current); msgT.current = setTimeout(() => setMsg(null), 2400); }, []);
+  const go = tab => { setNav({tab, crew:null, page:null}); setSheet(null); };
+  const openCustomize = () => { setNav({tab:'settings', crew:null, page:'customize'}); setSheet(null); };
+  const ss = state.session, running = !!ss && (ss.phase === 'lobby' || ss.phase === 'active');
+
+  useEffect(() => { const t = setInterval(() => { setNow(Date.now()); commit(s => s); }, running ? 250 : 30000); return () => clearInterval(t); }, [running]);
+  useEffect(() => { window.scrollTo(0, 0); }, [nav.tab, nav.crew]);
+
+  /* sessions */
+  const createLobby = (mins, ids) => { const t = Date.now(); commit(s => ({...s, session:{phase:'lobby', code:genCode(), mins, host:'me', createdAt:t, invited:ids.map((id,i) => ({id, joinAt:t + 1300 * (i + 1) + Math.floor(Math.random() * 700)}))}})); setNow(t); };
+  const joinLobby = code => { const t = Date.now(); commit(s => { const picks = s.friends.filter(f => f.status === 'friend').sort(() => Math.random() - .5).slice(0, 3);
+    return {...s, session:{phase:'lobby', code, mins:[15,25,45][Math.floor(Math.random() * 3)], host:picks[0].id, createdAt:t, autoStartAt:t + 4500, invited:picks.map((f,i) => ({id:f.id, joinAt:t + 900 * i}))}}; }); setNow(t); };
+  const startSession = () => { const t = Date.now(); outRef.current = 0;
+    commit(s => { const x = s.session; if(!x || x.phase !== 'lobby') return s;
+      const members = x.invited.filter(i => i.joinAt <= t).map(i => ({id:i.id, dropAt:Math.random() < .25 ? Math.round(x.mins * 60 * (.25 + Math.random() * .55)) : null}));
+      return {...s, session:{...x, phase:'active', startRealTs:t, speed:s.settings.speed, members}}; }); };
+  const cancelSession = () => commit(s => ({...s, session:null}));
+  const endEarly = () => { commit(s => { const x = s.session; if(!x) return s; const m = Math.floor(elapsedOf(x, Date.now()) / 60);
+    return {...s, session:null, history:[{id:uid(), title:'Ended early', mins:m, pts:0, ts:Date.now()}, ...s.history]}; }); toast('Session ended. No XP this time.'); };
+  const finish = () => {
+    let before = [];
+    const next = commit(s => { if(!s.session || s.session.phase !== 'active') return s; before = readyKeys(s); return finishSession(s); });
+    if(next.session && next.session.phase === 'done'){ const fresh = readyKeys(next).filter(k => !before.includes(k)); if(fresh.length && next.settings.notif.quests) toast(fresh.length + (fresh.length === 1 ? ' quest' : ' quests') + ' ready to claim'); }
+  };
+  const shareSession = () => commit(s => { const r = s.session && s.session.result; if(!r || r.shared) return s;
+    const st = mkPost(s, {who:'me', kind:'session', title:r.mins + ' min session', sub:r.withTxt, xp:r.total}); return {...st, session:{...st.session, result:{...r, shared:true}}}; });
+  useEffect(() => {
+    const x = state.session; if(!x) return;
+    if(x.phase === 'lobby' && x.autoStartAt && Date.now() >= x.autoStartAt) startSession();
+    if(x.phase === 'active'){
+      const el = elapsedOf(x, Date.now()), outs = x.members.filter(m => m.dropAt != null && el >= m.dropAt);
+      if(outs.length > outRef.current){ outRef.current = outs.length; const f = state.friends.find(y => y.id === outs[outs.length - 1].id); if(f) toast(first(f.name) + ' picked up their phone'); }
+      if(el >= x.mins * 60) finish();
+    }
+  }, [now, state.session]);
+
+  /* quests and feed */
+  const claim = q => { let rew = null; commit(s => { if(s.claimed[q.key]) return s; const r = awardQuest(s, q); rew = r.reward; return r.s; }); if(rew) setReward(rew); };
+  const checkIn = (q, note, share) => {
+    let rew = null, partial = 0;
+    commit(s => { const cnt = (s.checks[q.key] || 0) + 1, st = {...s, checks:{...s.checks, [q.key]:cnt}};
+      if(cnt >= q.target){ const r = awardQuest(st, q, {note, share}); rew = r.reward; return r.s; } partial = cnt; return st; });
+    setSheet(null); if(rew) setReward(rew); else toast('Checked in. ' + partial + ' of ' + q.target);
+  };
+  const postStatus = (text, group) => commit(s => mkPost(s, {who:'me', kind:'status', text, group}));
+  const react = (pid, type) => {
+    let fresh = [];
+    commit(s => { const p = s.feed.find(x => x.id === pid); const adding = !(p && (p.reacts[type] || []).includes('me'));
+      let st = addReact(s, pid, 'me', type); if(adding) st = {...st, me:{...st.me, reacts:st.me.reacts + 1}};
+      const a = checkAch(st); fresh = a.fresh; return a.s; });
+    if(fresh.length) toast('Achievement unlocked: ' + ACH.find(a => a.id === fresh[0]).title);
+  };
+  useEffect(() => {
+    const pend = state.feed.filter(p => p.who === 'me' && p.pend);
+    if(!pend.length) return;
+    commit(s => ({...s, feed:s.feed.map(p => p.pend ? {...p, pend:false} : p)}));
+    pend.forEach(post => {
+      const g = post.group && state.groups.find(x => x.id === post.group);
+      let pool = state.friends.filter(f => f.status === 'friend' && (!g || g.members.includes(f.id))).sort(() => Math.random() - .5);
+      pool.slice(0, 1 + Math.floor(Math.random() * 3)).forEach((f,i) => setTimeout(() => {
+        commit(s => addReact(s, post.id, f.id, REACTS[Math.floor(Math.random() * 3)].k, 'add'));
+        if(stRef.current.settings.notif.react) toast(first(f.name) + ' reacted to your post');
+      }, 2500 + i * 2400 + Math.random() * 800));
+    });
+  }, [state.feed]);
+
+  /* friends, nav */
+  const addFriend = p => {
+    commit(s => ({...s, friends:[...s.friends, {id:p.id, name:p.name, handle:p.handle, week:60 + Math.floor(Math.random() * 200), season:200 + Math.floor(Math.random() * 500), total:300 + Math.floor(Math.random() * 900), wmin:50 + Math.floor(Math.random() * 100), sessions:5 + Math.floor(Math.random() * 20), streak:Math.floor(Math.random() * 5), delta:0, lastTs:Date.now() - 90 * MIN, status:'pending'}]}));
+    toast('Invite sent to ' + first(p.name));
+    setTimeout(() => commit(s => ({...s, friends:s.friends.map(f => f.id === p.id ? {...f, status:'friend'} : f)})), 1600);
+  };
+  const inviteFriend = id => { setSheet(null); if(stRef.current.session){ toast('Finish your current session first'); go('hangout'); return; } setPre([id]); go('hangout'); const f = stRef.current.friends.find(x => x.id === id); if(f) toast('Inviting ' + first(f.name)); };
+  const resetAll = () => { try{ localStorage.removeItem(KEY); }catch(e){} const s = seed(); stRef.current = s; setRaw(s); setNav({tab:'home', crew:null}); toast('Prototype reset'); };
+  const replayIntro = () => commit(s => ({...s, onboarded:false}));
+  const finishIntro = (name, handle) => { commit(s => ({...s, onboarded:true, me:{...s.me, name, handle}})); setNav({tab:'home', crew:null}); };
+
+  const ctx = {state, commit, nav, setNav, go, sheet, setSheet, pre, setPre, now, toast, claim, checkIn, postStatus, react, createLobby, joinLobby, startSession, cancelSession, endEarly, shareSession,
+    addFriend, inviteFriend, resetAll, replayIntro, openCustomize, openFriend:id => setSheet({type:'friend', id}), openCrew:id => { setNav({tab:'crews', crew:id}); setSheet(null); }, openProfile:() => go('profile')};
+
+  const screens = {home:Home, quests:Quests, hangout:Hangout, ranks:Ranks, crews:Crews, profile:Profile, settings:Settings};
+  const Screen = screens[nav.tab] || Home;
+  const readyN = readyKeys(state).length, liveSess = state.session && state.session.phase === 'active';
+  const el = liveSess ? elapsedOf(state.session, now) : 0;
+  const TT = state.settings.tabs, TD = {home:{label:'Home', icon:'home'}, quests:{label:'Quests', icon:'target', n:readyN}, ranks:{label:'Ranks', icon:'trophy'}, crews:{label:'Crews', icon:'hangout'}};
+  const side = TT.order.filter(k => k === 'home' || !TT.hidden[k]), half = Math.ceil(side.length / 2);
+  const TABS = [...side.slice(0, half), 'hangout', ...side.slice(half)].map(k => k === 'hangout' ? {k, label:'Play'} : {k, ...TD[k]});
+
+  return html`<${Ctx.Provider} value=${ctx}>
+    ${!state.onboarded ? html`<${Onboarding} onDone=${finishIntro}/>` : html`<div className="app" key=${nav.tab + (nav.crew || '')}>${nav.crew ? html`<${CrewPage} id=${nav.crew}/>` : html`<${Screen}/>`}</div>`}
+    ${state.onboarded && state.session && nav.tab !== 'hangout' && (state.session.phase === 'active' || state.session.phase === 'done') && html`<button className="livebar" onClick=${() => go('hangout')}><span className="dot"></span><div className="grow"><p style=${{fontSize:13}} className="muted">${state.session.phase === 'active' ? 'Session live' : 'Session complete'}</p></div>${state.session.phase === 'active' ? html`<b>${fmt(Math.max(0, state.session.mins * 60 - el))}</b>` : html`<b>Collect XP</b>`}<${Icon} name="chevron" size=${16}/></button>`}
+    ${state.onboarded && html`<${Navigation} tabs=${TABS} current=${nav.tab} live=${liveSess} go=${go}/>`}
+    ${sheet && sheet.type === 'friend' && html`<${FriendSheet} id=${sheet.id}/>`}
+    ${sheet && sheet.type === 'crew' && html`<${CrewSheet} id=${sheet.id}/>`}
+    ${sheet && sheet.type === 'checkin' && html`<${CheckinSheet} q=${sheet.q}/>`}
+    ${reward && html`<${Reward} r=${reward} onClose=${() => setReward(null)}/>`}
+    ${msg && html`<div className="toast" role="status">${msg}</div>`}
+  <//>`;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(html`<${App}/>`);
+</script>
+
+</body></html>
