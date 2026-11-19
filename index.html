@@ -1479,27 +1479,17 @@ const signUp = async () => {
       <div><h1>Crews. Seasons. <em>Glory.</em></h1><p className="sub">Climb the weekly board, win the monthly season and put your crew on top of the league.</p></div></div>`,
     html`<div className="onb-body" key="4"><div><p className="eyebrow">Last step</p><h1>Pick your <em>name.</em></h1></div>
       <div className="stack"><div><label className="label" htmlFor="ob-name">Display name</label><input id="ob-name" className="field" maxLength=${28} value=${name} onChange=${e => setName(e.target.value)}/></div>
-        <div><label className="label" htmlFor="ob-handle">Username</label><input id="ob-handle" className="field" maxLength=${20} autoCapitalize="none" value=${handle} onChange=${e => setHandle(e.target.value.toLowerCase().replace(/[^a-z0-9_.]/g, ''))}/></div></div></div>`
+        <div><label className="label" htmlFor="ob-handle">Username</label><input id="ob-handle" className="field" maxLength=${20} autoCapitalize="none" value=${handle} onChange=${e => setHandle(e.target.value.toLowerCase().replace(/[^a-z0-9_.]/g, ''))}/></div>
+        ...value=${handle} onChange=${...}/></div>
 <div>
   <label className="label">Email</label>
-  <input
-    className="field"
-    type="email"
-    placeholder="you@example.com"
-    value=${email}
-    onChange=${e => setEmail(e.target.value)}
-  />
+<input className="field" type="email" placeholder="you@example.com" value=${email} onChange=${e => setEmail(e.target.value)} />
 </div>
 <div>
   <label className="label">Password</label>
-  <input
-    className="field"
-    type="password"
-    placeholder="At least 8 characters"
-    value=${password}
-    onChange=${e => setPassword(e.target.value)}
-  />
+<input className="field" type="password" placeholder="At least 8 characters" value=${password} onChange=${e => setPassword(e.target.value)} />
 </div>
+</div></div>
 
   ][step];
   return html`<div className="onb"><div className="onb-in">
